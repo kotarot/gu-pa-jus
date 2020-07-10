@@ -8,7 +8,26 @@
 - Docker Desktop Community 2.3.0.3
 
 
+## Docker Hub
+
+https://hub.docker.com/r/kotarot/gu-pa-jus
+
+
 ## 実行方法
+
+### Docker コマンド
+
+[Docker_Commands.md](/Docker_Commands.md)
+
+### ソースコードのセットアップ
+
+TODO
+
+### 採点基準のセットアップ
+
+TODO
+
+### 採点実行
 
 TODO
 

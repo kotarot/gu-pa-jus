@@ -1,17 +1,4 @@
-# :fist: :hand: :balance_scale: gu-pa-jus
-
-Dockerはホストとカーネルを共有するのでゲスト環境でアプリケーションを完全には安全に実行できない問題がある。
-Googleが開発したコンテナをサンドボックス化するランタイム [gVisor](https://github.com/google/gvisor) を使用すればこのセキュリティの問題が解決しそうだが、今のところLinuxのみサポートしている（Macで使えない）。
-
-今はひとまず、VM (おそらく VirtualBox + Vagrant) を利用する。
-
-
-## Docker Hub
-
-https://hub.docker.com/r/kotarot/gu-pa-jus
-
-
-## コマンド
+# Docker Commands
 
 イメージビルド
 ```
