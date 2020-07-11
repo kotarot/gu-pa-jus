@@ -4,9 +4,7 @@
 
 ユーザーが課題に対して作成したソースコードが正しいかどうかを、ソースコードの簡単な静的チェックやテストケースでの動作確認を通して判定（採点）する。
 
-**現在対応している言語:**
-
-- `C` (gcc (Ubuntu 9.3.0-10ubuntu2) 9.3.0)
+[![Tests](https://github.com/kotarot/gu-pa-jus/workflows/Tests/badge.svg)](https://github.com/kotarot/gu-pa-jus/actions?query=workflow%3ATests)
 
 
 ## 動作確認環境
@@ -17,7 +15,13 @@
 
 ## Docker Hub
 
+[![dockeri.co](https://dockeri.co/image/kotarot/gu-pa-jus)](https://hub.docker.com/r/kotarot/gu-pa-jus)
+
 https://hub.docker.com/r/kotarot/gu-pa-jus
+
+### 現在の対応済み言語
+
+- `C` (gcc (Ubuntu 9.3.0-10ubuntu2) 9.3.0)
 
 
 ## 実行方法
