@@ -19,15 +19,7 @@ def main():
     スクリプトのエントリポイント。
     """
 
-    # log
-    file_handler = logging.FileHandler(filename='logs/grade_{}.log'.format(datetime.datetime.now().strftime('%Y%m%d-%H%M%S')))
-    stdout_handler = logging.StreamHandler(sys.stdout)
-    handlers = [file_handler, stdout_handler]
-    logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s | %(message)s',
-            handlers=handlers)
-
+    # 初期設定
     inputs = list(snakemake.input)
     student_ids = []
     assignment_name = None
@@ -46,7 +38,16 @@ def main():
         else:
             student_ids.append(s[-1])
 
-    output_csv = 'summary_{}.csv'.format(assignment_name)
+    output_csv = 'results/summary_{}.csv'.format(assignment_name)
+
+    # logging
+    file_handler = logging.FileHandler(filename='logs/grade_{}_{}.log'.format(assignment_name, datetime.datetime.now().strftime('%Y%m%d-%H%M%S')))
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    handlers = [file_handler, stdout_handler]
+    logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s | %(message)s',
+            handlers=handlers)
 
     logging.info('Assignment : {}'.format(assignment_name))
     logging.info('#Students  : {}'.format(len(student_ids)))

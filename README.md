@@ -93,14 +93,16 @@ snakemake -n
 snakemake --cores 1 -F
 ```
 
+結果のCSVファイルが `results` ディレクトリ内に生成される。
+
 課題 (例: kadai_2020h1_1) の採点をシングルコアで実行 (`-F` をつけることで出力ファイルが存在しても強制的に実行する):
 ```
 snakemake kadai_2020h1_1 --cores 1 -F
 ```
 
-HTMLレポート出力:
+(今はあまり意味ない) HTMLレポート出力:
 ```
-snakemake --report report.html
+snakemake --report results/report.html
 ```
 
 
