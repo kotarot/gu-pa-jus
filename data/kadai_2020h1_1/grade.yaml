@@ -1,0 +1,72 @@
+- name: jpy2usd.c
+  test_cases:
+    - input: "1"
+      output: "0.931185"
+    - input: "100"
+      output: "93.118540"
+    - input: "1000"
+      output: "9.311854"
+    - input: "123456"
+      output: "1149.604246"
+    - input: "107"
+      output: "99.636838"
+    - input: "108"
+      output: "1.005680"
+  deny_list:
+    - "system"
+    - "fork"
+  timeout: 10
+
+- name: prime.c
+  test_cases:
+    - input: "1"
+      output: "No"
+    - input: "2"
+      output: "Yes"
+    - input: "3"
+      output: "Yes"
+    - input: "4"
+      output: "No"
+    - input: "5"
+      output: "Yes"
+    - input: "100"
+      output: "No"
+    - input: "101"
+      output: "Yes"
+    - input: "1001"
+      output: "No"
+    - input: "123456"
+      output: "No"
+    - input: "1000003"
+      output: "Yes"
+  deny_list:
+    - "system"
+    - "fork"
+  timeout: 10
+
+- name: pi.c
+  test_cases:
+    - input: ""
+      output: "3.141592"
+      penalty: 3
+  deny_list:
+    - "system"
+    - "fork"
+    - "3.14"
+    - "M_PI"
+  timeout: 10
+
+- name: statistics.c
+  test_cases:
+    - input: ""
+      output: "59"
+    - input: ""
+      output: "73"
+    - input: ""
+      output: "64.428571"
+    - input: ""
+      output: "21.673469"
+  deny_list:
+    - "system"
+    - "fork"
+  timeout: 10

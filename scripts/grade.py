@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import csv
+import datetime
 import glob
 import Levenshtein
+import logging
 import os
 import subprocess
 import sys
@@ -16,6 +18,16 @@ def main():
     """
     スクリプトのエントリポイント。
     """
+
+    # log
+    file_handler = logging.FileHandler(filename='logs/grade_{}.log'.format(datetime.datetime.now().strftime('%Y%m%d-%H%M%S')))
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    handlers = [file_handler, stdout_handler]
+    logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s | %(message)s',
+            handlers=handlers)
+
     inputs = list(snakemake.input)
     student_ids = []
     assignment_name = None
@@ -36,15 +48,14 @@ def main():
 
     output_csv = 'summary_{}.csv'.format(assignment_name)
 
-    print('Assignment: {}'.format(assignment_name))
-    print('#students:  {}'.format(len(student_ids)))
-    print('yaml:       {}'.format(grade_yaml))
-    print('Output CSV: {}'.format(output_csv))
+    logging.info('Assignment : {}'.format(assignment_name))
+    logging.info('#Students  : {}'.format(len(student_ids)))
+    logging.info('YAML       : {}'.format(grade_yaml))
+    logging.info('Output CSV : {}'.format(output_csv))
 
     # 設定ファイルの読み込み
     with open(grade_yaml, 'r') as yml:
         grade_config = yaml.load(yml, Loader=yaml.FullLoader)
-    #print(grade_config)
 
     # 採点開始
     results = []
@@ -55,7 +66,6 @@ def main():
         results.append(result_with_id)
 
     # 結果書き込み
-    #results = [['Kotaro Terada', 0, 1], ['b', 2, 3]]
     with open(output_csv, 'w') as f:
         writer = csv.writer(f)
         headers = ['student_id']
@@ -70,19 +80,18 @@ def grade_student(student_id, assignment_name, grade_config):
     各学生のソースコードを採点する。
     それぞれの問題に対する得点をリストで返す。
     """
-    print('')
-    print('Grading student {} ...'.format(student_id))
+    logging.info('')
+    logging.info('[Grading student {} ...]'.format(student_id))
     result = []
 
     code_files = [os.path.basename(filename) for filename in glob.glob('data/{}/{}/*.c'.format(assignment_name, student_id))]
-    #print(code_files)
     for problem in get_problems(grade_config):
-        print('* desired source code: {}'.format(problem))
+        logging.info('* Desired source code: {}'.format(problem))
 
         # 作成してほしかったファイル名と最もレーベンシュタイン距離が近いファイル名を採点対象とする
         target_file = get_closest(problem, code_files)
         if not target_file:
-            print('  {} is not found (> <)'.format(problem))
+            logging.info('  {} is not found (> <) --> score = 0'.format(problem))
             result.append(0)
         else:
             result.append(grade_source_code(
@@ -97,59 +106,67 @@ def grade_source_code(filename, problem, grade_config):
     ソースコードを採点して、点数を返す。
     ここまできてたら多少のスペルミスはあっても何かしらのソースコードを作成しているので、1点以上はつける。
     """
-    print('  found! and about to evaluate {}'.format(filename))
+    logging.info('  Found! Evaluating {}'.format(filename))
     score = 1
 
     # 対応する問題をconfigから抜き出しておく
     for p in grade_config:
         if p['name'] == problem:
             problem_config = p
-    #print(problem_config)
 
     # コンパイル前にdeny listの語句が使用されていないか確かめる
-    with open(filename, 'r') as f:
-        s = f.read()
-        for d in problem_config['deny_list']:
-            if d in s:
-                print('    The source code contains a word defined in the deny list. (score = {})'.format(score))
-                return score
+    try:
+        with open(filename, 'r') as f:
+            s = f.read()
+            for d in problem_config['deny_list']:
+                if d in s:
+                    logging.info('    The source code contains a word defined in the deny list. --> score = {}'.format(score))
+                    return score
+    except UnicodeDecodeError:
+        # ちょっと強引だけど仕方ない
+        logging.info('    Cannot decode the source code. --> score = {}'.format(score))
+        return score
 
     # ファイルコピー・コンパイルする
     basename = os.path.basename(filename)
     proc = subprocess.run('docker cp {} my-gu-pa-jus:/root/{}'.format(filename, basename).split(' '))
-    #print(proc)
     proc = subprocess.run('docker exec -it my-gu-pa-jus gcc /root/{} -lm -o /root/a.out'.format(basename).split(' '))
     if proc.returncode != 0:
-        print('    Could not compile the source code. (score = {})'.format(score))
+        logging.info('    Could not compile the source code. --> score = {}'.format(score))
         return score
 
     # テストケースで実行する
-    # 失敗するごとに5点から1点ずつ減らしていく
-    passed, failed = 0, 0
+    # 失敗するごとに5点から1点ずつ減らしていく (ただし設定ファイルに得点が指定されていればその点を引く)
+    passed, failed, penalty = 0, 0, 0
     for i, test_case in enumerate(problem_config['test_cases']):
-        print('    Trying test case {} ... '.format(i + 1), end='')
+        logging.info('    Trying test case {} ... '.format(i + 1))
         try:
             proc = subprocess.run('docker exec -i my-gu-pa-jus /root/a.out'.split(' '),
                     input=test_case['input'], encoding='UTF-8',
                     stdout=subprocess.PIPE,
                     timeout=problem_config['timeout'])
         except subprocess.TimeoutExpired as e:
-            print(e)
-            print('Execution timed out. (score = {})'.format(score))
+            proc = subprocess.run('docker exec -it my-gu-pa-jus pkill -f a.out'.split(' '))
+            logging.info(e)
+            logging.info('      Execution timed out. --> score = {}'.format(score))
             return score
 
         output = proc.stdout
         if test_case['output'] in output:
-            print('Passed!')
+            logging.info('      Passed!')
             passed += 1
         else:
-            print('Failed (> <)')
+            logging.info('      Failed (> <)')
             failed += 1
+            if 'penalty' in test_case:
+                penalty += test_case['penalty']
+            else:
+                penalty += 1
 
-    score = 5 - failed
+    score = 5 - penalty
     if score < 1:
         score = 1
-    print('    {} (out of {}) test cases passed. (score = {})'.format(passed, len(problem_config['test_cases']), score))
+    logging.info('    {} (out of {}) test cases passed. --> score = {}'.format(passed, len(problem_config['test_cases']), score))
 
     return score
 
