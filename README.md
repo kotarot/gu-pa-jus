@@ -40,6 +40,12 @@ $ pip install --upgrade pip
 $ pip install -r requirements.txt
 ```
 
+pygraphvizだけインストール方法が特殊......
+```
+brew install graphviz
+pip install --install-option="--include-path=/usr/local/include/" --install-option="--library-path=/usr/local/lib/" pygraphviz==1.5
+```
+
 確認:
 ```
 $ snakemake --version
@@ -68,7 +74,15 @@ TODO
 
 ### 採点実行
 
-TODO
+シングルコアで実行:
+```
+snakemake --cores 1
+```
+
+HTMLレポート出力:
+```
+snakemake --report report.html
+```
 
 
 ## Future work
