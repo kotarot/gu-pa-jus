@@ -12,6 +12,7 @@
 ## 動作確認環境
 
 - Docker Desktop Community 2.3.0.3
+- Python 3.8.3
 
 
 ## Docker Hub
@@ -27,7 +28,14 @@ https://hub.docker.com/r/kotarot/gu-pa-jus
 
 ### ローカル環境: Snakemake セットアップ
 
-TODO
+pyenv, virtualenv をセットアップし、Python をインストールする。
+
+```
+pyenv virtualenv 3.8.3 gu-pa-jus
+pyenv local 3.8.3/envs/gu-pa-jus
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
 ### ソースコードのセットアップ
 
