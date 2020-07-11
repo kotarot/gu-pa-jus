@@ -19,15 +19,7 @@ def main():
     スクリプトのエントリポイント。
     """
 
-    # log
-    file_handler = logging.FileHandler(filename='logs/grade_{}.log'.format(datetime.datetime.now().strftime('%Y%m%d-%H%M%S')))
-    stdout_handler = logging.StreamHandler(sys.stdout)
-    handlers = [file_handler, stdout_handler]
-    logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s | %(message)s',
-            handlers=handlers)
-
+    # 初期設定
     inputs = list(snakemake.input)
     student_ids = []
     assignment_name = None
@@ -46,7 +38,16 @@ def main():
         else:
             student_ids.append(s[-1])
 
-    output_csv = 'summary_{}.csv'.format(assignment_name)
+    output_csv = 'results/summary_{}.csv'.format(assignment_name)
+
+    # logging
+    file_handler = logging.FileHandler(filename='logs/grade_{}_{}.log'.format(assignment_name, datetime.datetime.now().strftime('%Y%m%d-%H%M%S')))
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    handlers = [file_handler, stdout_handler]
+    logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s | %(message)s',
+            handlers=handlers)
 
     logging.info('Assignment : {}'.format(assignment_name))
     logging.info('#Students  : {}'.format(len(student_ids)))
@@ -130,7 +131,7 @@ def grade_source_code(filename, problem, grade_config):
     # ファイルコピー・コンパイルする
     basename = os.path.basename(filename)
     proc = subprocess.run('docker cp {} my-gu-pa-jus:/root/{}'.format(filename, basename).split(' '))
-    proc = subprocess.run('docker exec -it my-gu-pa-jus gcc /root/{} -lm -o /root/a.out'.format(basename).split(' '))
+    proc = subprocess.run('docker exec my-gu-pa-jus gcc /root/{} -lm -o /root/a.out'.format(basename).split(' '))
     if proc.returncode != 0:
         logging.info('    Could not compile the source code. --> score = {}'.format(score))
         return score
@@ -146,7 +147,7 @@ def grade_source_code(filename, problem, grade_config):
                     stdout=subprocess.PIPE,
                     timeout=problem_config['timeout'])
         except subprocess.TimeoutExpired as e:
-            proc = subprocess.run('docker exec -it my-gu-pa-jus pkill -f a.out'.split(' '))
+            proc = subprocess.run('docker exec my-gu-pa-jus pkill -f a.out'.split(' '))
             logging.info(e)
             logging.info('      Execution timed out. --> score = {}'.format(score))
             return score

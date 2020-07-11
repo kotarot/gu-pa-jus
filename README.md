@@ -1,12 +1,11 @@
 # :fist: :hand: :balance_scale: gu-pa-jus
 
-:fist: (0点) か :hand: (5点) かをジャッジ :balance_scale: するオフラインジャッジシステム。
+[![Tests](https://github.com/kotarot/gu-pa-jus/workflows/Tests/badge.svg)](https://github.com/kotarot/gu-pa-jus/actions?query=workflow%3ATests)
+[![Docker Pulls](https://img.shields.io/docker/pulls/kotarot/gu-pa-jus.svg)](https://hub.docker.com/r/kotarot/gu-pa-jus/)
 
-ユーザーが課題に対して作成したソースコードが正しいかどうかを、ソースコードの簡単な静的チェックやテストケースでの動作確認を通して判定する。
+:fist: (0点) か :hand: (5点・満点) かをジャッジ :balance_scale: するオフラインジャッジシステム。
 
-**現在対応している言語:**
-
-- `C` (gcc (Ubuntu 9.3.0-10ubuntu2) 9.3.0)
+課題に対してユーザーが作成したソースコードが正しいかどうかを、ソースコードの簡単な静的チェック、コンパイル、テストケースでの動作確認を通して判定（採点）する。
 
 
 ## 動作確認環境
@@ -17,7 +16,13 @@
 
 ## Docker Hub
 
+[![dockeri.co](https://dockeri.co/image/kotarot/gu-pa-jus)](https://hub.docker.com/r/kotarot/gu-pa-jus)
+
 https://hub.docker.com/r/kotarot/gu-pa-jus
+
+### 現在の対応済み言語
+
+- `C` (gcc (Ubuntu 9.3.0-10ubuntu2) 9.3.0)
 
 
 ## 実行方法
@@ -93,25 +98,27 @@ snakemake -n
 snakemake --cores 1 -F
 ```
 
+結果のCSVファイルが `results` ディレクトリ内に生成される。
+
 課題 (例: kadai_2020h1_1) の採点をシングルコアで実行 (`-F` をつけることで出力ファイルが存在しても強制的に実行する):
 ```
 snakemake kadai_2020h1_1 --cores 1 -F
 ```
 
-HTMLレポート出力:
+(今はあまり意味ない) HTMLレポート出力:
 ```
-snakemake --report report.html
+snakemake --report results/report.html
 ```
 
 
 ## Future work
-
-### 多言語対応
-
-C++ や Java 等の言語にも対応する。
 
 ### セキュア化 (サンドボックス化)
 
 今はどちらかというと実行環境を整備するためにDockerを使用している。Dockerはホストとカーネルを共有するのでゲスト環境でアプリケーションを完全には安全に実行できない問題がある。
 Googleが開発したコンテナをサンドボックス化するランタイム [gVisor](https://github.com/google/gvisor) を使用すればこのセキュリティの問題が解決しそうだが、今のところLinuxのみサポートしている（Macで使えない）。
 回避方法としては、VM (例えば VirtualBox + Vagrant) を利用する方法が考えられる。
+
+### 多言語対応
+
+C++ や Java 等の他の言語にも対応する。
