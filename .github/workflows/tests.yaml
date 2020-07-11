@@ -48,3 +48,7 @@ jobs:
     - name: Grade the sample assignment
       run: |
         snakemake --cores 1 -F
+
+    - name: Test the sample output
+      run: |
+        diff results/summary_sample.csv results/summary_sample.csv.truth
