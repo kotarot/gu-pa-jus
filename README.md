@@ -3,9 +3,9 @@
 [![Tests](https://github.com/kotarot/gu-pa-jus/workflows/Tests/badge.svg)](https://github.com/kotarot/gu-pa-jus/actions?query=workflow%3ATests)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kotarot/gu-pa-jus.svg)](https://hub.docker.com/r/kotarot/gu-pa-jus/)
 
-:fist: (0点) か :hand: (5点) かをジャッジ :balance_scale: するオフラインジャッジシステム。
+:fist: (0点) か :hand: (5点・満点) かをジャッジ :balance_scale: するオフラインジャッジシステム。
 
-ユーザーが課題に対して作成したソースコードが正しいかどうかを、ソースコードの簡単な静的チェックやテストケースでの動作確認を通して判定（採点）する。
+課題に対してユーザーが作成したソースコードが正しいかどうかを、ソースコードの簡単な静的チェック、コンパイル、テストケースでの動作確認を通して判定（採点）する。
 
 
 ## 動作確認環境
