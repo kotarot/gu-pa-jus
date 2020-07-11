@@ -71,13 +71,13 @@ def grade_student(student_id, assignment_name, grade_config):
     それぞれの問題に対する得点をリストで返す。
     """
     print('')
-    print('Grading student {} ...'.format(student_id))
+    print('[Grading student {} ...]'.format(student_id))
     result = []
 
     code_files = [os.path.basename(filename) for filename in glob.glob('data/{}/{}/*.c'.format(assignment_name, student_id))]
     #print(code_files)
     for problem in get_problems(grade_config):
-        print('* desired source code: {}'.format(problem))
+        print('* Desired source code: {}'.format(problem))
 
         # 作成してほしかったファイル名と最もレーベンシュタイン距離が近いファイル名を採点対象とする
         target_file = get_closest(problem, code_files)
@@ -97,7 +97,7 @@ def grade_source_code(filename, problem, grade_config):
     ソースコードを採点して、点数を返す。
     ここまできてたら多少のスペルミスはあっても何かしらのソースコードを作成しているので、1点以上はつける。
     """
-    print('  found! and about to evaluate {}'.format(filename))
+    print('  Found! About to evaluate {}'.format(filename))
     score = 1
 
     # 対応する問題をconfigから抜き出しておく
@@ -124,8 +124,8 @@ def grade_source_code(filename, problem, grade_config):
         return score
 
     # テストケースで実行する
-    # 失敗するごとに5点から1点ずつ減らしていく
-    passed, failed = 0, 0
+    # 失敗するごとに5点から1点ずつ減らしていく (ただし設定ファイルに得点が指定されていればその点を引く)
+    passed, failed, penalty = 0, 0, 0
     for i, test_case in enumerate(problem_config['test_cases']):
         print('    Trying test case {} ... '.format(i + 1), end='')
         try:
@@ -145,8 +145,12 @@ def grade_source_code(filename, problem, grade_config):
         else:
             print('Failed (> <)')
             failed += 1
+            if 'penalty' in test_case:
+                penalty += test_case['penalty']
+            else:
+                penalty += 1
 
-    score = 5 - failed
+    score = 5 - penalty
     if score < 1:
         score = 1
     print('    {} (out of {}) test cases passed. (score = {})'.format(passed, len(problem_config['test_cases']), score))

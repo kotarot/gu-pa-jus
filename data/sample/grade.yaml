@@ -13,6 +13,7 @@
   test_cases:
     - input: ""
       output: "31415.926536"
+      penalty: 3
   deny_list:
     - "system"
     - "fork"
