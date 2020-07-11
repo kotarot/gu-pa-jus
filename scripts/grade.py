@@ -131,7 +131,7 @@ def grade_source_code(filename, problem, grade_config):
     # ファイルコピー・コンパイルする
     basename = os.path.basename(filename)
     proc = subprocess.run('docker cp {} my-gu-pa-jus:/root/{}'.format(filename, basename).split(' '))
-    proc = subprocess.run('docker exec -it my-gu-pa-jus gcc /root/{} -lm -o /root/a.out'.format(basename).split(' '))
+    proc = subprocess.run('docker exec my-gu-pa-jus gcc /root/{} -lm -o /root/a.out'.format(basename).split(' '))
     if proc.returncode != 0:
         logging.info('    Could not compile the source code. --> score = {}'.format(score))
         return score
@@ -147,7 +147,7 @@ def grade_source_code(filename, problem, grade_config):
                     stdout=subprocess.PIPE,
                     timeout=problem_config['timeout'])
         except subprocess.TimeoutExpired as e:
-            proc = subprocess.run('docker exec -it my-gu-pa-jus pkill -f a.out'.split(' '))
+            proc = subprocess.run('docker exec my-gu-pa-jus pkill -f a.out'.split(' '))
             logging.info(e)
             logging.info('      Execution timed out. --> score = {}'.format(score))
             return score
