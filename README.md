@@ -24,17 +24,26 @@ https://hub.docker.com/r/kotarot/gu-pa-jus
 
 ### ソースコード実行環境: 環境セットアップ Docker コマンド
 
-[Docker_Commands.md](/Docker_Commands.md)
+See: [Docker_Commands.md](/Docker_Commands.md)
+
+コンテナを起動しておく。
 
 ### ローカル環境: Snakemake セットアップ
 
-pyenv, virtualenv をセットアップし、Python をインストールする。
+pyenv, virtualenv をセットアップし、Python をインストールしておく。
 
+仮想環境と [Snakemake](https://github.com/snakemake/snakemake) のセットアップ:
 ```
-pyenv virtualenv 3.8.3 gu-pa-jus
-pyenv local 3.8.3/envs/gu-pa-jus
-pip install --upgrade pip
-pip install -r requirements.txt
+$ pyenv virtualenv 3.8.3 gu-pa-jus
+$ pyenv local 3.8.3/envs/gu-pa-jus
+$ pip install --upgrade pip
+$ pip install -r requirements.txt
+```
+
+確認:
+```
+$ snakemake --version
+5.20.1
 ```
 
 ### ソースコードのセットアップ
