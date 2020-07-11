@@ -2,12 +2,12 @@ import glob
 
 rule all:
     input:
-        "summary.csv"
+        "summary_sample.csv"
 
 rule sample:
     input:
-        expand("{id}", id=glob.glob("data/sample/*"))
+        expand("{sid}", sid=glob.glob("data/sample/*"))
     output:
-        "summary.csv"
-    shell:
-        "ls {input} | tee summary.csv"
+        "summary_sample.csv"
+    script:
+        "scripts/grade.py"

@@ -234,4 +234,5 @@ dmypy.json
 # Project specific settings
 .snakemake
 summary.csv
+summary_*.csv
 report.html
