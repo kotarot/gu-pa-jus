@@ -28,3 +28,8 @@ jobs:
     - name: Test Snakemake version
       run: |
         . assert.sh && assert "snakemake --version" "5.20.1"
+
+    - name: Build Dockerfile
+      run: |
+        docker build -t gu-pa-jus .
+        docker images
