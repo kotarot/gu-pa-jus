@@ -32,4 +32,19 @@ jobs:
     - name: Build Dockerfile
       run: |
         docker build -t gu-pa-jus .
+
+    - name: List Docker images
+      run: |
         docker images
+
+    - name: Start a gu-pa-jus container
+      run: |
+        docker run -d -it --name my-gu-pa-jus gu-pa-jus
+
+    - name: Grade the sample assignment (dry-run)
+      run: |
+        snakemake -n
+
+    - name: Grade the sample assignment
+      run: |
+        snakemake --cores 1 -F
