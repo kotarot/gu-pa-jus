@@ -115,12 +115,17 @@ def grade_source_code(filename, problem, grade_config):
             problem_config = p
 
     # コンパイル前にdeny listの語句が使用されていないか確かめる
-    with open(filename, 'r') as f:
-        s = f.read()
-        for d in problem_config['deny_list']:
-            if d in s:
-                logging.info('    The source code contains a word defined in the deny list. --> score = {}'.format(score))
-                return score
+    try:
+        with open(filename, 'r') as f:
+            s = f.read()
+            for d in problem_config['deny_list']:
+                if d in s:
+                    logging.info('    The source code contains a word defined in the deny list. --> score = {}'.format(score))
+                    return score
+    except UnicodeDecodeError:
+        # ちょっと強引だけど仕方ない
+        logging.info('    Cannot decode the source code. --> score = {}'.format(score))
+        return score
 
     # ファイルコピー・コンパイルする
     basename = os.path.basename(filename)
