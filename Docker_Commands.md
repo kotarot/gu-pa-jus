@@ -16,7 +16,7 @@ Dockerfile からイメージビルド
 docker build -t gu-pa-jus .
 ```
 
-起動
+コンテナ起動
 ```
 docker run -d -it --name my-gu-pa-jus gu-pa-jus
 ```

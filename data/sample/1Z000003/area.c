@@ -7,7 +7,7 @@ int main(void) {
     printf("Input b: ");
     scanf("%d", &b);
 
-    int s = a * b / 2
+    int s = a * b;
     printf("The area is %d\n", s);
 
     return 0;
