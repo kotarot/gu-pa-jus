@@ -1,0 +1,19 @@
+- name: area.c
+  test_cases:
+    - input: "3 4"
+      output: "6"
+    - input: "30 40"
+      output: "600"
+  deny_list:
+    - "system"
+    - "fork"
+  timeout: 30
+
+- name: circle.c
+  test_cases:
+    - input: ""
+      output: "31415.926536"
+  deny_list:
+    - "system"
+    - "fork"
+  timeout: 30
