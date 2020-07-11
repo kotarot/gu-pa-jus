@@ -74,6 +74,11 @@ TODO
 
 ### 採点実行
 
+dry-run:
+```
+snakemake -n
+```
+
 シングルコアで実行:
 ```
 snakemake --cores 1
