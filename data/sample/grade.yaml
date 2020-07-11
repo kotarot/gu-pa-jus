@@ -7,7 +7,7 @@
   deny_list:
     - "system"
     - "fork"
-  timeout: 30
+  timeout: 10
 
 - name: circle.c
   test_cases:
@@ -17,4 +17,4 @@
   deny_list:
     - "system"
     - "fork"
-  timeout: 30
+  timeout: 10
