@@ -28,4 +28,4 @@ jobs:
 
     - name: Snakemake version
       run: |
-        snakemake --version
+        . assert.sh && assert "snakemake --version" "5.20.1"
