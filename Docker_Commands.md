@@ -1,6 +1,17 @@
 # Docker Commands
 
-イメージビルド
+## Docker Hub
+
+https://hub.docker.com/r/kotarot/gu-pa-jus
+
+## コマンド
+
+Docker Hub から latest を取ってくる場合
+```
+docker pull kotarot/gu-pa-jus
+```
+
+Dockerfile からイメージビルド
 ```
 docker build -t gu-pa-jus .
 ```
