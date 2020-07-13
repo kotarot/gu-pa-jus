@@ -1,6 +1,6 @@
 # :fist: :hand: :balance_scale: gu-pa-jus
 
-[![Tests](https://github.com/kotarot/gu-pa-jus/workflows/Tests/badge.svg)](https://github.com/kotarot/gu-pa-jus/actions?query=workflow%3ATests)
+[![CI](https://github.com/kotarot/gu-pa-jus/workflows/ci/badge.svg)](https://github.com/kotarot/gu-pa-jus/actions?query=workflow%3Aci)
 [![Docker Build](https://img.shields.io/docker/cloud/build/kotarot/gu-pa-jus.svg)](https://hub.docker.com/r/kotarot/gu-pa-jus/)
 [![Docker Autobuild](https://img.shields.io/docker/cloud/automated/kotarot/gu-pa-jus.svg)](https://hub.docker.com/r/kotarot/gu-pa-jus/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kotarot/gu-pa-jus.svg)](https://hub.docker.com/r/kotarot/gu-pa-jus/)
