@@ -10,7 +10,7 @@
 課題に対してユーザーが作成したソースコードが正しいかどうかを、ソースコードの簡単な静的チェック、コンパイル、テストケースでの動作確認を通して判定（採点）する。
 
 
-## 動作確認環境
+## 動作確認済み環境
 
 - Docker Desktop Community 2.3.0.3
 - Python 3.8.3
@@ -89,6 +89,7 @@ $ snakemake --version
 ### 採点実行
 
 課題を追加したときは `Snakefile` を編集して課題のジョブを追加する。
+タスクランナーとして [Snakemake](https://github.com/snakemake/snakemake) を利用している。
 
 dry-run:
 ```
