@@ -6,6 +6,7 @@ import glob
 import Levenshtein
 import logging
 import os
+import re
 import subprocess
 import sys
 import yaml
@@ -153,7 +154,8 @@ def grade_source_code(filename, problem, grade_config):
             return score
 
         output = proc.stdout
-        if test_case['output'] in output:
+        match_obj = re.search(test_case['output'], output)
+        if match_obj:
             logging.info('      Passed!')
             passed += 1
         else:
