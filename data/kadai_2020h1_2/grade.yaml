@@ -1,0 +1,73 @@
+- name: narcissistic.c
+  test_cases:
+    - input: ""
+      output: "153\\n370\\n371\\n407"
+      penalty: 4
+  deny_list:
+    - "system"
+    - "fork"
+    - "153"
+    - "370"
+    - "371"
+    - "407"
+  timeout: 10
+
+- name: caesar.c
+  test_cases:
+    - input: "abcde"
+      output: "bcdef"
+    - input: "vwxyz"
+      output: "wxyza"
+    - input: "abcdefghijklmnopqrstuvwxyz"
+      output: "bcdefghijklmnopqrstuvwxyza"
+    - input: "ABC"
+      output: "ABC"
+    - input: "123!"
+      output: "123!"
+  deny_list:
+    - "system"
+    - "fork"
+  timeout: 10
+
+- name: mark_answers.c
+  external_file: "answers.txt"
+  test_cases:
+    - input: ""
+      output: "99"
+      penalty: 4
+  deny_list:
+    - "system"
+    - "fork"
+    - "99"
+  timeout: 10
+
+- name: complex_inv.c
+  test_cases:
+    - input: "1 0"
+      output: "\\+?\\s*1.0*"
+      penalty: 0.5
+    - input: "-2 0"
+      output: "-\\s*0.50*"
+      penalty: 0.5
+    - input: "0 -3"
+      output: "\\+?\\s*0.3*i"
+      penalty: 0.5
+    - input: "0 4"
+      output: "-\\s*0.250*i"
+      penalty: 0.5
+    - input: "1 -2"
+      output: "\\+?\\s*0.20*\\s*\\+\\s*0.40*i"
+      penalty: 0.5
+    - input: "1 2"
+      output: "\\+?\\s*0.20*\\s*-\\s*0.40*i"
+      penalty: 0.5
+    - input: "-1 -2"
+      output: "-\\s*0.20*\\s*\\+\\s*0.40*i"
+      penalty: 0.5
+    - input: "-1 2"
+      output: "-\\s*0.20*\\s*-\\s*0.40*i"
+      penalty: 0.5
+  deny_list:
+    - "system"
+    - "fork"
+  timeout: 10
