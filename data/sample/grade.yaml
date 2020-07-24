@@ -19,3 +19,14 @@
     - "fork"
     - "31415"
   timeout: 10
+
+- name: calc_sum.c
+  external_file: "numbers.txt"
+  test_cases:
+    - input: ""
+      output: "^600"
+      penalty: 3
+  deny_list:
+    - "system"
+    - "fork"
+  timeout: 10

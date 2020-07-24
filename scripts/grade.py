@@ -137,6 +137,13 @@ def grade_source_code(filename, problem, grade_config):
         logging.info('    Could not compile the source code. --> score = {}'.format(score))
         return score
 
+    # 外部ファイルが指定されていればコピーする
+    if 'external_file' in problem_config:
+        student_dir = os.path.dirname(filename)
+        external_filename = '{}/../{}'.format(student_dir, problem_config['external_file'])
+        basename = os.path.basename(external_filename)
+        proc = subprocess.run('docker cp {} my-gu-pa-jus:/root/{}'.format(external_filename, basename).split(' '))
+
     # テストケースで実行する
     # 失敗するごとに5点から1点ずつ減らしていく (ただし設定ファイルに得点が指定されていればその点を引く)
     passed, failed, penalty = 0, 0, 0
@@ -154,6 +161,7 @@ def grade_source_code(filename, problem, grade_config):
             return score
 
         output = proc.stdout
+        logging.info('      STDOUT ==>\n{}'.format(output))
         match_obj = re.search(test_case['output'], output)
         if match_obj:
             logging.info('      Passed!')
