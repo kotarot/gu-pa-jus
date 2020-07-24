@@ -6,6 +6,7 @@ import glob
 import Levenshtein
 import logging
 import os
+import re
 import subprocess
 import sys
 import yaml
@@ -34,6 +35,9 @@ def main():
         # 設定ファイル
         if i.endswith('.yaml'):
             grade_yaml = i
+        # テキストファイル (外部リソース)
+        elif i.endswith('.txt'):
+            pass
         # 学籍番号
         else:
             student_ids.append(s[-1])
@@ -46,7 +50,7 @@ def main():
     handlers = [file_handler, stdout_handler]
     logging.basicConfig(
             level=logging.INFO,
-            format='%(asctime)s | %(message)s',
+            format='%(asctime)s %(levelname)s | %(message)s',
             handlers=handlers)
 
     logging.info('Assignment : {}'.format(assignment_name))
@@ -82,7 +86,9 @@ def grade_student(student_id, assignment_name, grade_config):
     それぞれの問題に対する得点をリストで返す。
     """
     logging.info('')
-    logging.info('[Grading student {} ...]'.format(student_id))
+    logging.info('================================================================')
+    logging.info('Grading student {} ...'.format(student_id))
+    logging.info('================================================================')
     result = []
 
     code_files = [os.path.basename(filename) for filename in glob.glob('data/{}/{}/*.c'.format(assignment_name, student_id))]
@@ -121,7 +127,7 @@ def grade_source_code(filename, problem, grade_config):
             s = f.read()
             for d in problem_config['deny_list']:
                 if d in s:
-                    logging.info('    The source code contains a word defined in the deny list. --> score = {}'.format(score))
+                    logging.warning('    The source code contains the word `{}`, which is defined in the deny list. --> score = {}'.format(d, score))
                     return score
     except UnicodeDecodeError:
         # ちょっと強引だけど仕方ない
@@ -135,6 +141,13 @@ def grade_source_code(filename, problem, grade_config):
     if proc.returncode != 0:
         logging.info('    Could not compile the source code. --> score = {}'.format(score))
         return score
+
+    # 外部ファイルが指定されていればコピーする
+    if 'external_file' in problem_config:
+        student_dir = os.path.dirname(filename)
+        external_filename = '{}/../{}'.format(student_dir, problem_config['external_file'])
+        basename = os.path.basename(external_filename)
+        proc = subprocess.run('docker cp {} my-gu-pa-jus:/root/{}'.format(external_filename, basename).split(' '))
 
     # テストケースで実行する
     # 失敗するごとに5点から1点ずつ減らしていく (ただし設定ファイルに得点が指定されていればその点を引く)
@@ -153,7 +166,9 @@ def grade_source_code(filename, problem, grade_config):
             return score
 
         output = proc.stdout
-        if test_case['output'] in output:
+        logging.info('      STDOUT ==>\n{}'.format(output))
+        match_obj = re.search(test_case['output'], output)
+        if match_obj:
             logging.info('      Passed!')
             passed += 1
         else:
@@ -194,7 +209,10 @@ def get_closest(target, xs):
         if d < max_distance:
             closest = x
             max_distance = d
-    if max_distance <= 3:
+    if max_distance == 0:
+        return closest
+    elif max_distance <= 3:
+        logging.warning('  No files found that match the target `{}`, but `{}` is found.'.format(target, closest))
         return closest
     else:
         return None
