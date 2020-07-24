@@ -47,7 +47,7 @@ def main():
     handlers = [file_handler, stdout_handler]
     logging.basicConfig(
             level=logging.INFO,
-            format='%(asctime)s | %(message)s',
+            format='%(asctime)s %(levelname)s | %(message)s',
             handlers=handlers)
 
     logging.info('Assignment : {}'.format(assignment_name))
@@ -83,7 +83,9 @@ def grade_student(student_id, assignment_name, grade_config):
     それぞれの問題に対する得点をリストで返す。
     """
     logging.info('')
-    logging.info('[Grading student {} ...]'.format(student_id))
+    logging.info('================================================================')
+    logging.info('Grading student {} ...'.format(student_id))
+    logging.info('================================================================')
     result = []
 
     code_files = [os.path.basename(filename) for filename in glob.glob('data/{}/{}/*.c'.format(assignment_name, student_id))]
@@ -122,7 +124,7 @@ def grade_source_code(filename, problem, grade_config):
             s = f.read()
             for d in problem_config['deny_list']:
                 if d in s:
-                    logging.info('    The source code contains a word defined in the deny list. --> score = {}'.format(score))
+                    logging.warning('    The source code contains the word `{}`, which is defined in the deny list. --> score = {}'.format(d, score))
                     return score
     except UnicodeDecodeError:
         # ちょっと強引だけど仕方ない
@@ -204,7 +206,10 @@ def get_closest(target, xs):
         if d < max_distance:
             closest = x
             max_distance = d
-    if max_distance <= 3:
+    if max_distance == 0:
+        return closest
+    elif max_distance <= 3:
+        logging.warning('  No files found that match the target `{}`, but `{}` is found.'.format(target, closest))
         return closest
     else:
         return None

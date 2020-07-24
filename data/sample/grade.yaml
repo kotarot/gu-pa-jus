@@ -25,7 +25,7 @@
   test_cases:
     - input: ""
       output: "^600"
-      penalty: 3
+      penalty: 0.5
   deny_list:
     - "system"
     - "fork"
