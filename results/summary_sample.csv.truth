@@ -1,4 +1,4 @@
-student_id,area.c,circle.c
+student_id,area.c,circle.c,calc_sum.c
 1Z000001,5,5,5
 1Z000002,4,2,4.5
 1Z000003,3,5,4.5

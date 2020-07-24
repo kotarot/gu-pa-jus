@@ -35,6 +35,9 @@ def main():
         # 設定ファイル
         if i.endswith('.yaml'):
             grade_yaml = i
+        # テキストファイル (外部リソース)
+        elif i.endswith('.txt'):
+            pass
         # 学籍番号
         else:
             student_ids.append(s[-1])
