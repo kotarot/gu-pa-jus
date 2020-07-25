@@ -21,11 +21,19 @@
   timeout: 10
 
 - name: calc_sum.c
-  external_file: "numbers.txt"
   test_cases:
     - input: ""
       output: "^600"
-      penalty: 0.5
+      external_file:
+        source: "numbers1.txt"
+        destination: "numbers.txt"
+      penalty: 1.25
+    - input: ""
+      output: "^15000"
+      external_file:
+        source: "numbers2.txt"
+        destination: "numbers.txt"
+      penalty: 1.25
   deny_list:
     - "system"
     - "fork"

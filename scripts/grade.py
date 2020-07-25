@@ -15,6 +15,11 @@ import yaml
 ソースコードを採点するスクリプト。
 """
 
+# 最低得点
+MIN_SCORE = 1
+# コンテナ名
+CONTAINER_NAME = 'my-gu-pa-jus'
+
 def main():
     """
     スクリプトのエントリポイント。
@@ -114,7 +119,6 @@ def grade_source_code(filename, problem, grade_config):
     ここまできてたら多少のスペルミスはあっても何かしらのソースコードを作成しているので、1点以上はつける。
     """
     logging.info('  Found! Evaluating {}'.format(filename))
-    score = 1
 
     # 対応する問題をconfigから抜き出しておく
     for p in grade_config:
@@ -127,43 +131,43 @@ def grade_source_code(filename, problem, grade_config):
             s = f.read()
             for d in problem_config['deny_list']:
                 if d in s:
-                    logging.warning('    The source code contains the word `{}`, which is defined in the deny list. --> score = {}'.format(d, score))
-                    return score
+                    logging.warning('    The source code contains the word `{}`, which is defined in the deny list. --> score = {}'.format(d, MIN_SCORE))
+                    return MIN_SCORE
     except UnicodeDecodeError:
         # ちょっと強引だけど仕方ない
-        logging.info('    Cannot decode the source code. --> score = {}'.format(score))
-        return score
+        logging.info('    Cannot decode the source code. --> score = {}'.format(MIN_SCORE))
+        return MIN_SCORE
 
     # ファイルコピー・コンパイルする
     basename = os.path.basename(filename)
-    proc = subprocess.run('docker cp {} my-gu-pa-jus:/root/{}'.format(filename, basename).split(' '))
-    proc = subprocess.run('docker exec my-gu-pa-jus gcc /root/{} -lm -o /root/a.out'.format(basename).split(' '))
+    proc = subprocess.run('docker cp {} {}:/root/{}'.format(filename, CONTAINER_NAME, basename).split(' '))
+    proc = subprocess.run('docker exec {} gcc /root/{} -lm -o /root/a.out'.format(CONTAINER_NAME, basename).split(' '))
     if proc.returncode != 0:
-        logging.info('    Could not compile the source code. --> score = {}'.format(score))
-        return score
-
-    # 外部ファイルが指定されていればコピーする
-    if 'external_file' in problem_config:
-        student_dir = os.path.dirname(filename)
-        external_filename = '{}/../{}'.format(student_dir, problem_config['external_file'])
-        basename = os.path.basename(external_filename)
-        proc = subprocess.run('docker cp {} my-gu-pa-jus:/root/{}'.format(external_filename, basename).split(' '))
+        logging.info('    Could not compile the source code. --> score = {}'.format(MIN_SCORE))
+        return MIN_SCORE
 
     # テストケースで実行する
     # 失敗するごとに5点から1点ずつ減らしていく (ただし設定ファイルに得点が指定されていればその点を引く)
     passed, failed, penalty = 0, 0, 0
     for i, test_case in enumerate(problem_config['test_cases']):
-        logging.info('    Trying test case {} ... '.format(i + 1))
+        logging.info('    Trying test case {} / {} ... '.format(i + 1, len(problem_config['test_cases'])))
+
+        # 外部ファイルが指定されていればコピーする
+        if 'external_file' in test_case:
+            student_dir = os.path.dirname(filename)
+            external_filename = '{}/../{}'.format(student_dir, test_case['external_file']['source'])
+            proc = subprocess.run('docker cp {} {}:/root/{}'.format(external_filename, CONTAINER_NAME, test_case['external_file']['destination']).split(' '))
+
         try:
-            proc = subprocess.run('docker exec -i my-gu-pa-jus /root/a.out'.split(' '),
+            proc = subprocess.run('docker exec -i {} /root/a.out'.format(CONTAINER_NAME).split(' '),
                     input=test_case['input'], encoding='UTF-8',
                     stdout=subprocess.PIPE,
                     timeout=problem_config['timeout'])
         except subprocess.TimeoutExpired as e:
-            proc = subprocess.run('docker exec my-gu-pa-jus pkill -f a.out'.split(' '))
+            proc = subprocess.run('docker exec {} pkill -f a.out'.format(CONTAINER_NAME).split(' '))
             logging.info(e)
-            logging.info('      Execution timed out. --> score = {}'.format(score))
-            return score
+            logging.info('      Execution timed out. --> score = {}'.format(MIN_SCORE))
+            return MIN_SCORE
 
         output = proc.stdout
         logging.info('      STDOUT ==>\n{}'.format(output))
@@ -180,8 +184,8 @@ def grade_source_code(filename, problem, grade_config):
                 penalty += 1
 
     score = 5 - penalty
-    if score < 1:
-        score = 1
+    if score < MIN_SCORE:
+        score = MIN_SCORE
     logging.info('    {} (out of {}) test cases passed. --> score = {}'.format(passed, len(problem_config['test_cases']), score))
 
     return score

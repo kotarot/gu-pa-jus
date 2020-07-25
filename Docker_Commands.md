@@ -12,6 +12,8 @@ docker build -t gu-pa-jus .
 
 コンテナ起動
 ```
+docker run -d -it --name my-gu-pa-jus kotarot/gu-pa-jus
+(or)
 docker run -d -it --name my-gu-pa-jus gu-pa-jus
 ```
 
