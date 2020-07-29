@@ -12,4 +12,8 @@ RUN apt-get update -y \
       iputils-ping \
       net-tools \
  && apt-get clean \
+ && apt-get autoclean \
+ && rm -rf /var/cache/* \
+ && rm -rf /tmp/* \
+ && rm -rf /var/tmp/* \
  && rm -rf /var/lib/apt/lists/*
