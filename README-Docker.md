@@ -8,6 +8,8 @@ docker pull kotarot/gu-pa-jus
 Dockerfile からイメージビルド
 ```
 docker build -t gu-pa-jus .
+(or キャッシュ使用しないでビルドするなら)
+docker build -t gu-pa-jus . --no-cache=true
 ```
 
 コンテナ起動

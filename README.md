@@ -29,9 +29,9 @@ https://hub.docker.com/r/kotarot/gu-pa-jus
 
 ## 実行方法
 
-### ソースコード実行環境: 環境セットアップ Docker コマンド
+### 採点実行環境: 環境セットアップ Docker コマンド
 
-See: [Docker_Commands.md](/Docker_Commands.md)
+See: [README-Docker.md](/README-Docker.md)
 
 コンテナを起動しておく。
 
