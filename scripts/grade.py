@@ -67,11 +67,27 @@ def main():
     with open(grade_yaml, 'r') as yml:
         grade_config = yaml.load(yml, Loader=yaml.FullLoader)
 
-    # 採点開始
+    # ディレクトリごとに採点開始
+    # 同じ学籍番号の結果は同じキーにまとめる
+    results_dict = {}
+    multi_submission_pattern_str = r'^1[A-Z][0-9A-Z]{6}_[0-9]+$'
+    multi_submission_pattern = re.compile(multi_submission_pattern_str)
+    for student_dir in student_ids:
+        # 同じ学生の複数提出がある場合は学籍番号を抽出する
+        if multi_submission_pattern.match(student_dir):
+            student_id = student_dir.split('_')[0]
+        else:
+            student_id = student_dir
+
+        if student_id not in results_dict:
+            results_dict[student_id] = []
+        results_dict[student_id].append(grade_student(student_dir, assignment_name, grade_config))
+
+    # ベスト結果の選択
     results = []
-    for student_id in student_ids:
-        result = [student_id] + grade_student(student_id, assignment_name, grade_config)
-        results.append(result)
+    for student_id, result in results_dict.items():
+        best = [max(s) for s in zip(*result)]
+        results.append([student_id] + best)
 
     # 結果書き込み
     with open(output_csv, 'w') as f:
