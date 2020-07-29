@@ -88,7 +88,7 @@ def grade_student(student_id, assignment_name, grade_config):
     """
     logging.info('')
     logging.info('================================================================')
-    logging.info('Grading student {} ...'.format(student_id))
+    logging.info('Grading student "{}" ...'.format(student_id))
     logging.info('================================================================')
     result = []
 
@@ -136,7 +136,7 @@ def grade_source_code(filename, problem, grade_config):
 
     # ファイルコピー・コンパイルする
     basename = os.path.basename(filename)
-    proc = subprocess.run('docker cp {} {}:/root/{}'.format(filename, CONTAINER_NAME, basename).split(' '))
+    proc = subprocess.run("docker;cp;{};{}:/root/{}".format(filename, CONTAINER_NAME, basename).split(';'))
     proc = subprocess.run('docker exec {} gcc /root/{} -lm -o /root/a.out'.format(CONTAINER_NAME, basename).split(' '))
     if proc.returncode != 0:
         logging.info('    Could not compile the source code. --> score = {}'.format(MIN_SCORE))
