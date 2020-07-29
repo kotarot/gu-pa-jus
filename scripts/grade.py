@@ -70,17 +70,13 @@ def main():
     # 採点開始
     results = []
     for student_id in student_ids:
-        result = grade_student(student_id, assignment_name, grade_config)
-        result_with_id = [student_id]
-        result_with_id.extend(result)
-        results.append(result_with_id)
+        result = [student_id] + grade_student(student_id, assignment_name, grade_config)
+        results.append(result)
 
     # 結果書き込み
     with open(output_csv, 'w') as f:
         writer = csv.writer(f)
-        headers = ['student_id']
-        problems = get_problems(grade_config)
-        headers.extend(problems)
+        headers = ['student_id'] + get_problems(grade_config)
         writer.writerow(headers)
         writer.writerows(results)
 
