@@ -6,9 +6,10 @@ WORKDIR /root
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt update -y && \
-    apt upgrade -y && \
-    apt install -y \
-        build-essential=12.8ubuntu1 \
-        iputils-ping \
-        net-tools
+RUN apt-get update -y \
+ && apt-get install -y \
+      build-essential=12.8ubuntu1 \
+      iputils-ping \
+      net-tools \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
