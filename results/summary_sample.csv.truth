@@ -1,8 +1,8 @@
-student_id,area.c,circle.c,calc_sum.c
-1Z000001,5,5,5
-1Z000002,4,2,2.5
-1Z000003,3,5,2.5
-1Z000004,1,1,2.5
-1Z000005,5,5,0
-1Z000006,1,0,0
-"1Z000007 NAME, Name 名前　名前_0000001_assignsubmission_file_",1,0,0
+student_id,area.c,circle.c,calc_sum.c,total
+1Z000001,5,5,5,15
+1Z000002,4,2,2.5,8.5
+1Z000003,3,5,2.5,10.5
+1Z000004,1,1,2.5,4.5
+1Z000005,5,5,0,10
+1Z000006,1,0,0,1
+"1Z000007 NAME, Name 名前　名前_0000001_assignsubmission_file_",3,0,0,3
