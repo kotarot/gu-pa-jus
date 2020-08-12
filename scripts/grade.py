@@ -152,6 +152,7 @@ def grade_source_code(filename, problem, grade_config):
 
     # ファイルコピー・コンパイルする
     basename = os.path.basename(filename)
+    # `filename` にスペースが含まれている可能性があるため `;` で区切る
     proc = subprocess.run("docker;cp;{};{}:/root/{}".format(filename, CONTAINER_NAME, basename).split(';'))
     proc = subprocess.run('docker exec {} gcc /root/{} -lm -o /root/a.out'.format(CONTAINER_NAME, basename).split(' '))
     if proc.returncode != 0:
@@ -168,7 +169,8 @@ def grade_source_code(filename, problem, grade_config):
         if 'external_file' in test_case:
             student_dir = os.path.dirname(filename)
             external_filename = '{}/../{}'.format(student_dir, test_case['external_file']['source'])
-            proc = subprocess.run('docker cp {} {}:/root/{}'.format(external_filename, CONTAINER_NAME, test_case['external_file']['destination']).split(' '))
+            # `external_filename` にスペースが含まれている可能性があるため `;` で区切る
+            proc = subprocess.run('docker;cp;{};{}:/root/{}'.format(external_filename, CONTAINER_NAME, test_case['external_file']['destination']).split(';'))
 
         succeeded = True
         try:
