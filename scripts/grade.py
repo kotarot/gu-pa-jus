@@ -198,6 +198,8 @@ def grade_source_code(filename, problem, grade_config):
     score = 5 - penalty
     if score < MIN_SCORE:
         score = MIN_SCORE
+    # スコアは小数点以下2桁までで丸める
+    score = round(score, 2)
     logging.info('    {} (out of {}) test cases passed. --> score = {}'.format(passed, len(problem_config['test_cases']), score))
 
     return score
