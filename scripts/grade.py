@@ -170,7 +170,7 @@ def grade_source_code(filename, problem, grade_config):
             external_filename = '{}/../{}'.format(student_dir, test_case['external_file']['source'])
             proc = subprocess.run('docker cp {} {}:/root/{}'.format(external_filename, CONTAINER_NAME, test_case['external_file']['destination']).split(' '))
 
-        proc_failed = False
+        succeeded = True
         try:
             proc = subprocess.run('docker exec -i {} /root/a.out'.format(CONTAINER_NAME).split(' '),
                     input=test_case['input'], encoding='UTF-8',
@@ -180,10 +180,15 @@ def grade_source_code(filename, problem, grade_config):
             proc = subprocess.run('docker exec {} pkill -f a.out'.format(CONTAINER_NAME).split(' '))
             logging.info(e)
             logging.info('      Execution timed out...')
-            proc_failed = True
+            succeeded = False
+        except UnicodeDecodeError as e:
+            # ちょっと強引だけど仕方ない... ごめんなさい
+            logging.info(e)
+            logging.info('      UnicodeDecodeError...')
+            succeeded = False
 
-        # 実行結果が正しいケース
-        if not proc_failed:
+        # 実行が成功し、実行結果が正しいケース
+        if succeeded:
             output = proc.stdout
             logging.info('      STDOUT ==>\n{}'.format(output))
             match_obj = re.search(test_case['output'], output)
@@ -192,7 +197,7 @@ def grade_source_code(filename, problem, grade_config):
                 passed += 1
                 continue
 
-        # 実行結果が間違っている、またはタイムアウトのケース
+        # 実行結果が間違っている、または実行が失敗（タイムアウト・出力文字列のデコードエラー）のケース
         logging.info('      Failed (> <)')
         failed += 1
         if 'penalty' in test_case:
