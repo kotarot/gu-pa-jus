@@ -89,10 +89,15 @@ def main():
         best = [max(s) for s in zip(*result)]
         results.append([student_id] + best)
 
+    # 合計得点計算
+    for r in results:
+        total = round(sum(r[1:]), 2)
+        r.append(total)
+
     # 結果書き込み
     with open(output_csv, 'w') as f:
         writer = csv.writer(f)
-        headers = ['student_id'] + get_problems(grade_config)
+        headers = ['student_id'] + get_problems(grade_config) + ['total']
         writer.writerow(headers)
         writer.writerows(results)
 
@@ -146,12 +151,13 @@ def grade_source_code(filename, problem, grade_config):
                     logging.warning('    The source code contains the word `{}`, which is defined in the deny list. --> score = {}'.format(d, MIN_SCORE))
                     return MIN_SCORE
     except UnicodeDecodeError:
-        # ちょっと強引だけど仕方ない
+        # ちょっと強引だけど仕方ない... ごめんなさい
         logging.info('    Cannot decode the source code. --> score = {}'.format(MIN_SCORE))
         return MIN_SCORE
 
     # ファイルコピー・コンパイルする
     basename = os.path.basename(filename)
+    # `filename` にスペースが含まれている可能性があるため `;` で区切る
     proc = subprocess.run("docker;cp;{};{}:/root/{}".format(filename, CONTAINER_NAME, basename).split(';'))
     proc = subprocess.run('docker exec {} gcc /root/{} -lm -o /root/a.out'.format(CONTAINER_NAME, basename).split(' '))
     if proc.returncode != 0:
@@ -168,8 +174,10 @@ def grade_source_code(filename, problem, grade_config):
         if 'external_file' in test_case:
             student_dir = os.path.dirname(filename)
             external_filename = '{}/../{}'.format(student_dir, test_case['external_file']['source'])
-            proc = subprocess.run('docker cp {} {}:/root/{}'.format(external_filename, CONTAINER_NAME, test_case['external_file']['destination']).split(' '))
+            # `external_filename` にスペースが含まれている可能性があるため `;` で区切る
+            proc = subprocess.run('docker;cp;{};{}:/root/{}'.format(external_filename, CONTAINER_NAME, test_case['external_file']['destination']).split(';'))
 
+        succeeded = True
         try:
             proc = subprocess.run('docker exec -i {} /root/a.out'.format(CONTAINER_NAME).split(' '),
                     input=test_case['input'], encoding='UTF-8',
@@ -178,26 +186,37 @@ def grade_source_code(filename, problem, grade_config):
         except subprocess.TimeoutExpired as e:
             proc = subprocess.run('docker exec {} pkill -f a.out'.format(CONTAINER_NAME).split(' '))
             logging.info(e)
-            logging.info('      Execution timed out. --> score = {}'.format(MIN_SCORE))
-            return MIN_SCORE
+            logging.info('      Execution timed out...')
+            succeeded = False
+        except UnicodeDecodeError as e:
+            # ちょっと強引だけど仕方ない... ごめんなさい
+            logging.info(e)
+            logging.info('      UnicodeDecodeError...')
+            succeeded = False
 
-        output = proc.stdout
-        logging.info('      STDOUT ==>\n{}'.format(output))
-        match_obj = re.search(test_case['output'], output)
-        if match_obj:
-            logging.info('      Passed!')
-            passed += 1
+        # 実行が成功し、実行結果が正しいケース
+        if succeeded:
+            output = proc.stdout
+            logging.info('      STDOUT ==>\n{}'.format(output))
+            match_obj = re.search(test_case['output'], output)
+            if match_obj:
+                logging.info('      Passed!')
+                passed += 1
+                continue
+
+        # 実行結果が間違っている、または実行が失敗（タイムアウト・出力文字列のデコードエラー）のケース
+        logging.info('      Failed (> <)')
+        failed += 1
+        if 'penalty' in test_case:
+            penalty += test_case['penalty']
         else:
-            logging.info('      Failed (> <)')
-            failed += 1
-            if 'penalty' in test_case:
-                penalty += test_case['penalty']
-            else:
-                penalty += 1
+            penalty += 1
 
     score = 5 - penalty
     if score < MIN_SCORE:
         score = MIN_SCORE
+    # スコアは小数点以下2桁までで丸める
+    score = round(score, 2)
     logging.info('    {} (out of {}) test cases passed. --> score = {}'.format(passed, len(problem_config['test_cases']), score))
 
     return score
@@ -216,7 +235,7 @@ def get_problems(grade_config):
 def get_closest(target, xs):
     """
     xs の中からもっとも target に文字列のレーベンシュタイン距離が近いものを返す。
-    ただし、距離が3より離れていたら、対象のファイルはなかったことにする。
+    ただし、距離が2より離れていたら、対象のファイルはなかったことにする。
     """
     closest = None
     max_distance = sys.maxsize
@@ -227,7 +246,7 @@ def get_closest(target, xs):
             max_distance = d
     if max_distance == 0:
         return closest
-    elif max_distance <= 3:
+    elif max_distance <= 2:
         logging.warning('  No files found that match the target `{}`, but `{}` is found.'.format(target, closest))
         return closest
     else:
