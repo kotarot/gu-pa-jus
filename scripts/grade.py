@@ -89,10 +89,15 @@ def main():
         best = [max(s) for s in zip(*result)]
         results.append([student_id] + best)
 
+    # 合計得点計算
+    for r in results:
+        total = round(sum(r[1:]), 2)
+        r.append(total)
+
     # 結果書き込み
     with open(output_csv, 'w') as f:
         writer = csv.writer(f)
-        headers = ['student_id'] + get_problems(grade_config)
+        headers = ['student_id'] + get_problems(grade_config) + ['total']
         writer.writerow(headers)
         writer.writerows(results)
 
