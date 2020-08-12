@@ -146,7 +146,7 @@ def grade_source_code(filename, problem, grade_config):
                     logging.warning('    The source code contains the word `{}`, which is defined in the deny list. --> score = {}'.format(d, MIN_SCORE))
                     return MIN_SCORE
     except UnicodeDecodeError:
-        # ちょっと強引だけど仕方ない
+        # ちょっと強引だけど仕方ない... ごめんなさい
         logging.info('    Cannot decode the source code. --> score = {}'.format(MIN_SCORE))
         return MIN_SCORE
 
@@ -170,6 +170,7 @@ def grade_source_code(filename, problem, grade_config):
             external_filename = '{}/../{}'.format(student_dir, test_case['external_file']['source'])
             proc = subprocess.run('docker cp {} {}:/root/{}'.format(external_filename, CONTAINER_NAME, test_case['external_file']['destination']).split(' '))
 
+        proc_failed = False
         try:
             proc = subprocess.run('docker exec -i {} /root/a.out'.format(CONTAINER_NAME).split(' '),
                     input=test_case['input'], encoding='UTF-8',
@@ -178,22 +179,26 @@ def grade_source_code(filename, problem, grade_config):
         except subprocess.TimeoutExpired as e:
             proc = subprocess.run('docker exec {} pkill -f a.out'.format(CONTAINER_NAME).split(' '))
             logging.info(e)
-            logging.info('      Execution timed out. --> score = {}'.format(MIN_SCORE))
-            return MIN_SCORE
+            logging.info('      Execution timed out...')
+            proc_failed = True
 
-        output = proc.stdout
-        logging.info('      STDOUT ==>\n{}'.format(output))
-        match_obj = re.search(test_case['output'], output)
-        if match_obj:
-            logging.info('      Passed!')
-            passed += 1
+        # 実行結果が正しいケース
+        if not proc_failed:
+            output = proc.stdout
+            logging.info('      STDOUT ==>\n{}'.format(output))
+            match_obj = re.search(test_case['output'], output)
+            if match_obj:
+                logging.info('      Passed!')
+                passed += 1
+                continue
+
+        # 実行結果が間違っている、またはタイムアウトのケース
+        logging.info('      Failed (> <)')
+        failed += 1
+        if 'penalty' in test_case:
+            penalty += test_case['penalty']
         else:
-            logging.info('      Failed (> <)')
-            failed += 1
-            if 'penalty' in test_case:
-                penalty += test_case['penalty']
-            else:
-                penalty += 1
+            penalty += 1
 
     score = 5 - penalty
     if score < MIN_SCORE:
