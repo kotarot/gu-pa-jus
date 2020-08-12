@@ -216,7 +216,7 @@ def get_problems(grade_config):
 def get_closest(target, xs):
     """
     xs の中からもっとも target に文字列のレーベンシュタイン距離が近いものを返す。
-    ただし、距離が3より離れていたら、対象のファイルはなかったことにする。
+    ただし、距離が2より離れていたら、対象のファイルはなかったことにする。
     """
     closest = None
     max_distance = sys.maxsize
@@ -227,7 +227,7 @@ def get_closest(target, xs):
             max_distance = d
     if max_distance == 0:
         return closest
-    elif max_distance <= 3:
+    elif max_distance <= 2:
         logging.warning('  No files found that match the target `{}`, but `{}` is found.'.format(target, closest))
         return closest
     else:
