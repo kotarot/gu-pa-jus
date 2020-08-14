@@ -29,6 +29,10 @@ jobs:
       run: |
         . assert.sh && assert "snakemake --version" "5.20.1"
 
+    - name: Print pylint version
+      run: |
+        pylint --version
+
     - name: Build Dockerfile
       run: |
         docker build -t gu-pa-jus .
