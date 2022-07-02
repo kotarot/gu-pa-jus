@@ -201,7 +201,9 @@ def grade_source_code(filename, problem, grade_config):
         # 実行が成功した
         if succeeded:
             output = proc.stdout
-            logging.info(f'STDOUT ==>\n{"-" * 60}\n{output.rstrip()}\n{"-" * 60}')
+            # 標準出力の1000文字までをログに出力する
+            output_disp = output[:1000]
+            logging.info(f'STDOUT ==>\n{"-" * 60}\n{output_disp.rstrip()}\n{"-" * 60}')
             # 実行結果が正しいケース
             match_obj = re.search(test_case['output'], output)
             if match_obj:
