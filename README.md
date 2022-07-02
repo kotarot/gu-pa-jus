@@ -12,7 +12,7 @@
 
 ## 動作確認済み環境
 
-- Docker Desktop Community 2.3.0.3
+- Docker Desktop 4.10.0
 - Python 3.8.3
 
 
@@ -24,7 +24,7 @@ https://hub.docker.com/r/kotarot/gu-pa-jus
 
 ### 現在の対応済み言語
 
-- `C` (gcc (Ubuntu 9.3.0-10ubuntu2) 9.3.0)
+- `C` (gcc (Ubuntu 11.3.0-3ubuntu1) 11.3.0)
 
 
 ## 実行方法
