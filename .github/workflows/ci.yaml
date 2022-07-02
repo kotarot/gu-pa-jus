@@ -48,11 +48,11 @@ jobs:
 
     - name: Grade the sample assignment (dry-run)
       run: |
-        snakemake -n
+        snakemake kadai --config kadainame="sample" -n
 
     - name: Grade the sample assignment
       run: |
-        snakemake --cores 1 -F
+        snakemake kadai --config kadainame="sample" --cores 1 -F
 
     - name: Test the sample output
       run: |

@@ -113,24 +113,24 @@ $ snakemake --version
 
 dry-run:
 ```
-snakemake -n
+snakemake kadai --config kadainame="sample" -n
 ```
 
 サンプルをシングルコアで実行 (`-F` をつけることで出力ファイルが存在しても強制的に実行する):
 ```
-snakemake --cores 1 -F
+snakemake kadai --config kadainame="sample" --cores 1 -F
 ```
 
 結果のCSVファイルが `results` ディレクトリ内に生成される。
 
-課題 (例: kadai_2020h1_1) の採点をシングルコアで実行 (`-F` をつけることで出力ファイルが存在しても強制的に実行する):
+課題 (例: kadai-2022h1-03-class1) の採点をシングルコアで実行 (`-F` をつけることで出力ファイルが存在しても強制的に実行する):
 ```
-snakemake kadai_2020h1_1 --cores 1 -F
+snakemake kadai --config kadainame="kadai-2022h1-03-class1" --cores 1 -F
 ```
 
 (今はあまり意味ない) HTMLレポート出力:
 ```
-snakemake --report results/report.html
+snakemake kadai --config kadainame="sample" --report results/report.html
 ```
 
 
