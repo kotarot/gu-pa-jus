@@ -12,18 +12,10 @@ rule sample:
     script:
         "scripts/grade.py"
 
-rule kadai_2020h1_1:
+rule kadai:
     input:
-        expand("{sid}", sid=glob.glob("data/kadai_2020h1_1/*"))
+        expand("{sid}", sid=glob.glob(f"data/{config['kadainame']}/*"))
     output:
-        "results/summary_kadai_2020h1_1.csv"
-    script:
-        "scripts/grade.py"
-
-rule kadai_2020h1_2:
-    input:
-        expand("{sid}", sid=glob.glob("data/kadai_2020h1_2/*"))
-    output:
-        "results/summary_kadai_2020h1_2.csv"
+        f"results/summary_{config['kadainame']}.csv"
     script:
         "scripts/grade.py"
