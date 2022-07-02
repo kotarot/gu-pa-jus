@@ -42,7 +42,7 @@
 - name: condition.c
   test_cases:
     - input: "1"
-      output: "(pos|POS)"
+      output: "(pos|POS|正)"
       penalty: 2
     - input: "-10"
       output: "neg"
