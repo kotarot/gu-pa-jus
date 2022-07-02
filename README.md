@@ -43,6 +43,10 @@ pyenv, virtualenv をセットアップし、Python をインストールして�
 ```
 $ pyenv virtualenv 3.10.4 gu-pa-jus
 $ pyenv local 3.10.4/envs/gu-pa-jus
+
+# pygraphvizのインストールに必要
+$ brew install graphviz
+
 $ pip install --upgrade pip
 $ pip install -r requirements.txt
 ```
