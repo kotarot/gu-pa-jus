@@ -119,7 +119,7 @@ def grade_student(student_id, assignment_name, grade_config, progress=''):
     code_files = [os.path.basename(filename) for filename in glob.glob('data/{}/{}/*.c'.format(assignment_name, student_id))]
     for problem in get_problems(grade_config):
         logging.info('')
-        logging.info('Expecting source code: {}'.format(problem))
+        logging.info('Expecting source code: `{}`'.format(problem))
 
         # 作成してほしかったファイル名と最もレーベンシュタイン距離が近いファイル名を採点対象とする
         target_file = get_closest(problem, code_files)
@@ -127,7 +127,7 @@ def grade_student(student_id, assignment_name, grade_config, progress=''):
             logging.warning('{} is not found (> <) --> score = 0'.format(problem))
             result.append(0)
         else:
-            logging.info('Found! Evaluating {}'.format(assignment_name))
+            logging.info('Found! Evaluating `{}`'.format(target_file))
             result.append(grade_source_code(
                     'data/{}/{}/{}'.format(assignment_name, student_id, target_file),
                     problem, grade_config))
@@ -172,8 +172,7 @@ def grade_source_code(filename, problem, grade_config):
     # 失敗するごとに5点から1点ずつ減らしていく (ただし設定ファイルに得点が指定されていればその点を引く)
     passed, failed, penalty = 0, 0, 0
     for i, test_case in enumerate(problem_config['test_cases']):
-        logging.info('')
-        logging.info('Trying test case {} / {} ... '.format(i + 1, len(problem_config['test_cases'])))
+        logging.info('--- Trying test case {} / {} ... '.format(i + 1, len(problem_config['test_cases'])))
 
         # 外部ファイルが指定されていればコピーする
         if 'external_file' in test_case:
@@ -223,7 +222,6 @@ def grade_source_code(filename, problem, grade_config):
         score = MIN_SCORE
     # スコアは小数点以下2桁までで丸める
     score = round(score, 2)
-    logging.info('')
     logging.info('{} (out of {}) test cases passed. --> score = {}'.format(passed, len(problem_config['test_cases']), score))
 
     return score
