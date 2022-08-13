@@ -18,8 +18,6 @@
 
 ## Docker Hub
 
-[![dockeri.co](https://dockeri.co/image/kotarot/gu-pa-jus)](https://hub.docker.com/r/kotarot/gu-pa-jus)
-
 https://hub.docker.com/r/kotarot/gu-pa-jus
 
 ### 現在の対応済み言語
