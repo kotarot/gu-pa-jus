@@ -38,7 +38,7 @@
       penalty: 1.25
     - input: ""
       bash_test:
-        command: "wc -l progress.txt && rm progress.txt"
+        command: "wc -l progress.txt"
         expected: "3"
       external_files:
         - source: "numbers2.txt"
