@@ -172,19 +172,21 @@ def grade_source_code(filename, problem, grade_config):
     # 失敗するごとに5点から1点ずつ減らしていく (ただし設定ファイルに得点が指定されていればその点を引く)
     passed, failed, penalty = 0, 0, 0
     for i, test_case in enumerate(problem_config['test_cases']):
-        logging.info('--- Trying test case {} / {} ... '.format(i + 1, len(problem_config['test_cases'])))
+        logging.info('--- Trying test case {} / {} ...'.format(i + 1, len(problem_config['test_cases'])))
 
         # 外部ファイルが指定されていればコピーする
-        if 'external_file' in test_case:
+        if 'external_files' in test_case:
             student_dir = os.path.dirname(filename)
-            external_filename = '{}/../{}'.format(student_dir, test_case['external_file']['source'])
-            # `external_filename` にスペースが含まれている可能性があるため `;` で区切る
-            proc = subprocess.run('docker;cp;{};{}:/root/{}'.format(external_filename, CONTAINER_NAME, test_case['external_file']['destination']).split(';'))
+            for external_file in test_case['external_files']:
+                external_filename = '{}/../{}'.format(student_dir, external_file['source'])
+                # `external_filename` にスペースが含まれている可能性があるため `;` で区切る
+                proc = subprocess.run('docker;cp;{};{}:/root/{}'.format(external_filename, CONTAINER_NAME, external_file['destination']).split(';'))
 
         succeeded = True
         try:
             proc = subprocess.run('docker exec -i {} /root/a.out'.format(CONTAINER_NAME).split(' '),
-                    input=test_case['input'], encoding='UTF-8',
+                    encoding='UTF-8',
+                    input=test_case['input'],
                     stdout=subprocess.PIPE,
                     timeout=problem_config['timeout'])
         except subprocess.TimeoutExpired as e:
@@ -193,13 +195,28 @@ def grade_source_code(filename, problem, grade_config):
             logging.warning('Execution timed out...')
             succeeded = False
         except UnicodeDecodeError as e:
-            # ちょっと強引だけど仕方ない... ごめんなさい
+            # ちょっと強引だけど仕方ない...
+            # 文字コードを操作するプログラムで不正な文字変換をしてしまうとUnicode解釈できない出力が表示されることがある
             logging.warning(e)
             logging.warning('UnicodeDecodeError...')
             succeeded = False
 
-        # 実行が成功した
-        if succeeded:
+        # a.outの実行が成功している場合のbash_test
+        if succeeded and 'bash_test' in test_case:
+            proc = subprocess.run('docker exec -i {} bash -c "{}"'.format(CONTAINER_NAME, test_case['bash_test']['command']),
+                    encoding='UTF-8',
+                    stdout=subprocess.PIPE,
+                    shell=True,
+                    timeout=problem_config['timeout'])
+            bash_output = proc.stdout
+            if test_case['bash_test']['expected'] in bash_output:
+                logging.info('bash_test Passed!')
+                passed += 1
+                continue
+            logging.info('bash_test failed')
+
+        # a.outの実行が成功した (bash_testが無い場合)
+        elif succeeded:
             output = proc.stdout
             # 標準出力の1000文字までをログに出力する
             output_disp = output[:1000]
