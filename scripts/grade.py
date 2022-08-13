@@ -185,7 +185,8 @@ def grade_source_code(filename, problem, grade_config):
         succeeded = True
         try:
             proc = subprocess.run('docker exec -i {} /root/a.out'.format(CONTAINER_NAME).split(' '),
-                    input=test_case['input'], encoding='UTF-8',
+                    encoding='UTF-8',
+                    input=test_case['input'],
                     stdout=subprocess.PIPE,
                     timeout=problem_config['timeout'])
         except subprocess.TimeoutExpired as e:
@@ -200,8 +201,22 @@ def grade_source_code(filename, problem, grade_config):
             logging.warning('UnicodeDecodeError...')
             succeeded = False
 
-        # 実行が成功した
-        if succeeded:
+        # a.outの実行が成功している場合のbash_test
+        if succeeded and 'bash_test' in test_case:
+            proc = subprocess.run('docker exec -i {} bash -c "{}"'.format(CONTAINER_NAME, test_case['bash_test']['command']),
+                    encoding='UTF-8',
+                    stdout=subprocess.PIPE,
+                    shell=True,
+                    timeout=problem_config['timeout'])
+            bash_output = proc.stdout
+            if test_case['bash_test']['expected'] in bash_output:
+                logging.info('bash_test Passed!')
+                passed += 1
+                continue
+            logging.info('bash_test failed')
+
+        # a.outの実行が成功した (bash_testが無い場合)
+        elif succeeded:
             output = proc.stdout
             # 標準出力の1000文字までをログに出力する
             output_disp = output[:1000]

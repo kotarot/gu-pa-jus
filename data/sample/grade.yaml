@@ -36,6 +36,14 @@
         - source: "numbers2.txt"
           destination: "numbers.txt"
       penalty: 1.25
+    - input: ""
+      bash_test:
+        command: "wc -l progress.txt && rm progress.txt"
+        expected: "3"
+      external_files:
+        - source: "numbers2.txt"
+          destination: "numbers.txt"
+      penalty: 1.25
   deny_list:
     - "system"
     - "fork"
