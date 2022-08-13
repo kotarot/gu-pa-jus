@@ -175,11 +175,12 @@ def grade_source_code(filename, problem, grade_config):
         logging.info('--- Trying test case {} / {} ...'.format(i + 1, len(problem_config['test_cases'])))
 
         # 外部ファイルが指定されていればコピーする
-        if 'external_file' in test_case:
+        if 'external_files' in test_case:
             student_dir = os.path.dirname(filename)
-            external_filename = '{}/../{}'.format(student_dir, test_case['external_file']['source'])
-            # `external_filename` にスペースが含まれている可能性があるため `;` で区切る
-            proc = subprocess.run('docker;cp;{};{}:/root/{}'.format(external_filename, CONTAINER_NAME, test_case['external_file']['destination']).split(';'))
+            for external_file in test_case['external_files']:
+                external_filename = '{}/../{}'.format(student_dir, external_file['source'])
+                # `external_filename` にスペースが含まれている可能性があるため `;` で区切る
+                proc = subprocess.run('docker;cp;{};{}:/root/{}'.format(external_filename, CONTAINER_NAME, external_file['destination']).split(';'))
 
         succeeded = True
         try:
