@@ -146,7 +146,7 @@ def grade_source_code(filename, problem, grade_config):
         if p['name'] == problem:
             problem_config = p
 
-    # コンパイル前にdeny listの語句が使用されていないか確かめる
+    # コンパイル前にdeny listの語句がソースコード内に使用されていないか確かめる
     try:
         with open(filename, 'r') as f:
             s = f.read()
@@ -159,7 +159,10 @@ def grade_source_code(filename, problem, grade_config):
         logging.warning('Cannot decode the source code. --> score = {}'.format(MIN_SCORE))
         return MIN_SCORE
 
-    # ファイルコピー・コンパイルする
+    # コンテナの不要ファイルを削除する
+    proc = subprocess.run(f'docker exec -i {CONTAINER_NAME} bash -c "rm -f /root/*.c /root/a.out /root/*.txt"', shell=True)
+
+    # ソースコードファイルと外部入力ファイルをコピー・コンパイルする
     basename = os.path.basename(filename)
     # `filename` にスペースが含まれている可能性があるため `;` で区切る
     proc = subprocess.run("docker;cp;{};{}:/root/{}".format(filename, CONTAINER_NAME, basename).split(';'))
@@ -206,8 +209,7 @@ def grade_source_code(filename, problem, grade_config):
             proc = subprocess.run('docker exec -i {} bash -c "{}"'.format(CONTAINER_NAME, test_case['bash_test']['command']),
                     encoding='UTF-8',
                     stdout=subprocess.PIPE,
-                    shell=True,
-                    timeout=problem_config['timeout'])
+                    shell=True)
             bash_output = proc.stdout
             if test_case['bash_test']['expected'] in bash_output:
                 logging.info('bash_test Passed!')
