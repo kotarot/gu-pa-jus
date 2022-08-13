@@ -12,7 +12,7 @@
 
 ## 動作確認済み環境
 
-- Docker Desktop 4.10.0
+- Docker Desktop 4.11.1
 - Python 3.10.4
 
 
@@ -24,7 +24,7 @@ https://hub.docker.com/r/kotarot/gu-pa-jus
 
 ### 現在の対応済み言語
 
-- `C` (gcc (Ubuntu 11.3.0-3ubuntu1) 11.3.0)
+- `C` (gcc (Ubuntu 11.3.0-5ubuntu1) 11.3.0)
 
 
 ## 実行方法
@@ -42,7 +42,7 @@ pyenv, virtualenv をセットアップし、Python をインストールして�
 仮想環境と [Snakemake](https://github.com/snakemake/snakemake) のセットアップ:
 ```
 $ pyenv virtualenv 3.10.4 gu-pa-jus
-$ pyenv local 3.10.4/envs/gu-pa-jus
+$ pyenv local gu-pa-jus
 
 # pygraphvizのインストールに必要
 $ brew install graphviz

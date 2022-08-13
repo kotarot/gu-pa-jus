@@ -172,7 +172,7 @@ def grade_source_code(filename, problem, grade_config):
     # 失敗するごとに5点から1点ずつ減らしていく (ただし設定ファイルに得点が指定されていればその点を引く)
     passed, failed, penalty = 0, 0, 0
     for i, test_case in enumerate(problem_config['test_cases']):
-        logging.info('--- Trying test case {} / {} ... '.format(i + 1, len(problem_config['test_cases'])))
+        logging.info('--- Trying test case {} / {} ...'.format(i + 1, len(problem_config['test_cases'])))
 
         # 外部ファイルが指定されていればコピーする
         if 'external_file' in test_case:
@@ -193,7 +193,8 @@ def grade_source_code(filename, problem, grade_config):
             logging.warning('Execution timed out...')
             succeeded = False
         except UnicodeDecodeError as e:
-            # ちょっと強引だけど仕方ない... ごめんなさい
+            # ちょっと強引だけど仕方ない...
+            # 文字コードを操作するプログラムで不正な文字変換をしてしまうとUnicode解釈できない出力が表示されることがある
             logging.warning(e)
             logging.warning('UnicodeDecodeError...')
             succeeded = False
