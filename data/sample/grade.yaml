@@ -44,9 +44,6 @@
         - source: "numbers2.txt"
           destination: "numbers.txt"
       penalty: 1.25
-  deny_list:
-    - "system"
-    - "fork"
   timeout: 10
 
 - name: condition.c
@@ -57,7 +54,4 @@
     - input: "-10"
       output: "neg"
       penalty: 2
-  deny_list:
-    - "system"
-    - "fork"
   timeout: 10

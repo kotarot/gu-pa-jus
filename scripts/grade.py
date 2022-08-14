@@ -147,6 +147,8 @@ def grade_source_code(filename, problem, grade_config):
             problem_config = p
 
     # コンパイル前にdeny listの語句がソースコード内に使用されていないか確かめる
+    if 'deny_list' not in problem_config:
+        problem_config['deny_list'] = []
     try:
         with open(filename, 'r') as f:
             s = f.read()
