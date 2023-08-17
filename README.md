@@ -12,8 +12,8 @@
 
 ## 動作確認済み環境
 
-- Docker Desktop 4.11.1
-- Python 3.10.4
+- Docker Desktop 4.21.1
+- Python 3.11.4
 
 
 ## Docker Hub
@@ -39,11 +39,8 @@ pyenv, virtualenv をセットアップし、Python をインストールして�
 
 仮想環境と [Snakemake](https://github.com/snakemake/snakemake) のセットアップ:
 ```
-$ pyenv virtualenv 3.10.4 gu-pa-jus
-$ pyenv local gu-pa-jus
-
-# pygraphvizのインストールに必要
-$ brew install graphviz
+$ pyenv virtualenv 3.11.4 gu-pa-jus
+$ pyenv local 3.11.4/envs/gu-pa-jus
 
 $ pip install --upgrade pip
 $ pip install -r requirements.txt
@@ -52,7 +49,7 @@ $ pip install -r requirements.txt
 確認:
 ```
 $ snakemake --version
-7.8.5
+7.32.3
 ```
 
 ### ソースコードのセットアップ
