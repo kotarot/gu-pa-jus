@@ -1,7 +1,6 @@
 Jinja2==3.1.2
-networkx==2.8.4
-pygraphviz==1.9
-Pygments==2.12.0
-pylint==2.14.4
-python-Levenshtein==0.12.2
-snakemake==7.8.5
+networkx==3.1
+Pygments==2.16.1
+pylint==2.17.5
+python-Levenshtein==0.21.1
+snakemake==7.32.3
