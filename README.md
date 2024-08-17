@@ -12,7 +12,7 @@
 
 ## 動作確認済み環境
 
-- Docker Desktop 4.21.1
+- Docker Desktop 4.33.0
 - Python 3.11.4
 
 
@@ -49,7 +49,7 @@ $ pip install -r requirements.txt
 確認:
 ```
 $ snakemake --version
-7.32.3
+7.32.4
 ```
 
 ### ソースコードのセットアップ
