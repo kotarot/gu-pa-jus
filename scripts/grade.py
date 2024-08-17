@@ -116,20 +116,33 @@ def grade_student(student_id, assignment_name, grade_config, progress=''):
     logging.info('=' * 120)
     result = []
 
-    code_files = [os.path.basename(filename) for filename in glob.glob('data/{}/{}/*.c'.format(assignment_name, student_id))]
+    # ソースコードのファイル名のみのリスト
+    source_files = [os.path.basename(filename) for filename in glob.glob('data/{}/{}/*.c'.format(assignment_name, student_id))]
+
+    # ファイル名から日本語文字を削除する
+    # key: 修正後のファイル名, value: 元のファイル名 の辞書を作る
+    source_files_with_corrected = {}
+    for filename in source_files:
+        # ひらがな、カタカナ、漢字を削除
+        corrected_filename = re.sub(r'[ぁ-ん ァ-ン 一-龥]', '', filename)
+        # 全角スペースを削除
+        corrected_filename = corrected_filename.replace('　', '')
+        source_files_with_corrected[corrected_filename] = filename
+
     for problem in get_problems(grade_config):
         logging.info('')
         logging.info('Expecting source code: `{}`'.format(problem))
 
         # 作成してほしかったファイル名と最もレーベンシュタイン距離が近いファイル名を採点対象とする
-        target_file = get_closest(problem, code_files)
+        target_file = get_closest(problem, list(source_files_with_corrected.keys()))
         if not target_file:
             logging.warning('{} is not found (> <) --> score = 0'.format(problem))
             result.append(0)
         else:
-            logging.info('Found! Evaluating `{}`'.format(target_file))
+            original_filename = source_files_with_corrected[target_file]
+            logging.info('Found! Evaluating `{}`'.format(original_filename))
             result.append(grade_source_code(
-                    'data/{}/{}/{}'.format(assignment_name, student_id, target_file),
+                    'data/{}/{}/{}'.format(assignment_name, student_id, original_filename),
                     problem, grade_config))
 
     return result
