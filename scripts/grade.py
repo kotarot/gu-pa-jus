@@ -119,16 +119,18 @@ def grade_student(student_id, assignment_name, grade_config, progress=''):
     # ソースコードのファイル名のみのリスト
     source_files = [os.path.basename(filename) for filename in glob.glob('data/{}/{}/*.c'.format(assignment_name, student_id))]
 
-    # ファイル名から日本語文字を削除する
+    # ファイル名から明らかに不要な文字たちを削除する
     # key: 修正後のファイル名, value: 元のファイル名 の辞書を作る
     source_files_with_corrected = {}
     for filename in source_files:
-        # ひらがな、カタカナ、漢字を削除
+        # 日本語文字（ひらがな、カタカナ、漢字）を削除
         corrected_filename = re.sub(r'[ぁ-ん ァ-ン 一-龥]', '', filename)
         # 全角スペースを削除
         corrected_filename = corrected_filename.replace('　', '')
         # 「1W000000」のパターン文字列を削除
         corrected_filename = re.sub(r'1[a-zA-Z][0-9]{6}', '', corrected_filename)
+        # 「(数字)」のパターン文字列を削除
+        corrected_filename = re.sub(r'\([0-9]+\)', '', corrected_filename)
         source_files_with_corrected[corrected_filename] = filename
 
     for problem in get_problems(grade_config):
