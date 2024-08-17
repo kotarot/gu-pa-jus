@@ -242,12 +242,22 @@ def grade_source_code(filename, problem, grade_config):
             # 標準出力の1000文字までをログに出力する
             output_disp = output[:1000]
             logging.info(f'STDOUT ==>\n{"-" * 60}\n{output_disp.rstrip()}\n{"-" * 60}')
+
+            # 出力文字数制限オーバー
+            # ただし句読点と改行はカウントしない
+            # 数字もカウントしない
+            limited_output = re.sub(r'[,.:;、。\n]', '', output)
+            limited_output = re.sub(r'[0-9]', '', limited_output)
+            if ('output_length_limit' in test_case) and (len(limited_output) > test_case['output_length_limit']):
+                logging.info('Output length limit exceeded.')
+
             # 実行結果が正しいケース
-            match_obj = re.search(test_case['output'], output)
-            if match_obj:
-                logging.info('Passed!')
-                passed += 1
-                continue
+            else:
+                match_obj = re.search(test_case['output'], output)
+                if match_obj:
+                    logging.info('Passed!')
+                    passed += 1
+                    continue
 
         # 実行結果が間違っている、または実行が失敗（タイムアウト・出力文字列のデコードエラー）のケース
         logging.info('Failed (> <)')
