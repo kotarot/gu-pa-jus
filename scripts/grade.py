@@ -127,6 +127,8 @@ def grade_student(student_id, assignment_name, grade_config, progress=''):
         corrected_filename = re.sub(r'[ぁ-ん ァ-ン 一-龥]', '', filename)
         # 全角スペースを削除
         corrected_filename = corrected_filename.replace('　', '')
+        # 「1W000000」のパターン文字列を削除
+        corrected_filename = re.sub(r'1[a-zA-Z][0-9]{6}', '', corrected_filename)
         source_files_with_corrected[corrected_filename] = filename
 
     for problem in get_problems(grade_config):
