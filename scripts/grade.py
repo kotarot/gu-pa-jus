@@ -234,7 +234,7 @@ def grade_source_code(filename, problem, grade_config):
                 logging.info('bash_test Passed!')
                 passed += 1
                 continue
-            logging.info('bash_test failed')
+            logging.info(f'bash_test failed... Expected: `{test_case["bash_test"]["expected"]}`')
 
         # a.outの実行が成功した (bash_testが無い場合)
         elif succeeded:
@@ -252,11 +252,11 @@ def grade_source_code(filename, problem, grade_config):
             limited_output = re.sub(r'[,.:;、。\n]', '', output)
             limited_output = re.sub(r'[0-9]', '', limited_output)
             if output_length_limit and (len(limited_output) > output_length_limit):
-                logging.info('Output length limit exceeded.')
+                logging.info('Output length limit exceeded...')
 
             # 実行結果に不許可文字列が含まれている場合
             elif output_disallowed and re.search(output_disallowed, output):
-                logging.info('Output contains disallowed string.')
+                logging.info(f'Output contains disallowed string... Disallowed: `{output_disallowed}`')
 
             # 実行結果が期待結果と正しいケース
             else:
@@ -265,6 +265,7 @@ def grade_source_code(filename, problem, grade_config):
                     logging.info('Passed!')
                     passed += 1
                     continue
+                logging.info(f'Not matched... Expected: `{test_case["output"]}`')
 
         # 実行結果が間違っている、または実行が失敗（タイムアウト・出力文字列のデコードエラー）のケース
         logging.info('Failed (> <)')
@@ -294,7 +295,7 @@ def get_problems(grade_config):
     return problems
 
 
-def get_closest(target, xs):
+def get_closest(target, xs, accept_distance=3):
     """
     xs の中からもっとも target に文字列のレーベンシュタイン距離が近いものを返す。
     ただし、距離が3より離れていたら、対象のファイルはなかったことにする。
@@ -308,7 +309,7 @@ def get_closest(target, xs):
             max_distance = d
     if max_distance == 0:
         return closest
-    elif max_distance <= 3:
+    elif max_distance <= accept_distance:
         logging.warning('No files found that match the target `{}`, but `{}` is found.'.format(target, closest))
         return closest
     else:
