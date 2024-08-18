@@ -116,20 +116,37 @@ def grade_student(student_id, assignment_name, grade_config, progress=''):
     logging.info('=' * 120)
     result = []
 
-    code_files = [os.path.basename(filename) for filename in glob.glob('data/{}/{}/*.c'.format(assignment_name, student_id))]
+    # ソースコードのファイル名のみのリスト
+    source_files = [os.path.basename(filename) for filename in glob.glob('data/{}/{}/*.c'.format(assignment_name, student_id))]
+
+    # ファイル名から明らかに不要な文字たちを削除する
+    # key: 修正後のファイル名, value: 元のファイル名 の辞書を作る
+    source_files_with_corrected = {}
+    for filename in source_files:
+        # 日本語文字（ひらがな、カタカナ、漢字）を削除
+        corrected_filename = re.sub(r'[ぁ-ん ァ-ン 一-龥]', '', filename)
+        # 全角スペースを削除
+        corrected_filename = corrected_filename.replace('　', '')
+        # 「1W000000」のパターン文字列を削除
+        corrected_filename = re.sub(r'1[a-zA-Z][0-9]{6}', '', corrected_filename)
+        # 「(数字)」のパターン文字列を削除
+        corrected_filename = re.sub(r'\([0-9]+\)', '', corrected_filename)
+        source_files_with_corrected[corrected_filename] = filename
+
     for problem in get_problems(grade_config):
         logging.info('')
         logging.info('Expecting source code: `{}`'.format(problem))
 
         # 作成してほしかったファイル名と最もレーベンシュタイン距離が近いファイル名を採点対象とする
-        target_file = get_closest(problem, code_files)
+        target_file = get_closest(problem, list(source_files_with_corrected.keys()))
         if not target_file:
             logging.warning('{} is not found (> <) --> score = 0'.format(problem))
             result.append(0)
         else:
-            logging.info('Found! Evaluating `{}`'.format(target_file))
+            original_filename = source_files_with_corrected[target_file]
+            logging.info('Found! Evaluating `{}`'.format(original_filename))
             result.append(grade_source_code(
-                    'data/{}/{}/{}'.format(assignment_name, student_id, target_file),
+                    'data/{}/{}/{}'.format(assignment_name, student_id, original_filename),
                     problem, grade_config))
 
     return result
@@ -217,7 +234,7 @@ def grade_source_code(filename, problem, grade_config):
                 logging.info('bash_test Passed!')
                 passed += 1
                 continue
-            logging.info('bash_test failed')
+            logging.info(f'bash_test failed... Expected: `{test_case["bash_test"]["expected"]}`')
 
         # a.outの実行が成功した (bash_testが無い場合)
         elif succeeded:
@@ -225,12 +242,30 @@ def grade_source_code(filename, problem, grade_config):
             # 標準出力の1000文字までをログに出力する
             output_disp = output[:1000]
             logging.info(f'STDOUT ==>\n{"-" * 60}\n{output_disp.rstrip()}\n{"-" * 60}')
-            # 実行結果が正しいケース
-            match_obj = re.search(test_case['output'], output)
-            if match_obj:
-                logging.info('Passed!')
-                passed += 1
-                continue
+
+            output_length_limit = test_case.get('output_length_limit', None)
+            output_disallowed = test_case.get('output_disallowed', None)
+
+            # 出力文字数制限オーバー
+            # ただし句読点と改行はカウントしない
+            # 数字もカウントしない
+            output_filtered = re.sub(r'[,.:;、。\n]', '', output)
+            output_filtered = re.sub(r'[0-9]', '', output_filtered)
+            if output_length_limit and (len(output_filtered) > output_length_limit):
+                logging.info('Output length limit exceeded...')
+
+            # 実行結果に不許可文字列が含まれている場合
+            elif output_disallowed and re.search(output_disallowed, output):
+                logging.info(f'Output contains disallowed string... Disallowed: `{output_disallowed}`')
+
+            # 実行結果が期待結果と正しいケース
+            else:
+                match_obj = re.search(test_case['output'], output)
+                if match_obj:
+                    logging.info('Passed!')
+                    passed += 1
+                    continue
+                logging.info(f'Not matched... Expected: `{test_case["output"]}`')
 
         # 実行結果が間違っている、または実行が失敗（タイムアウト・出力文字列のデコードエラー）のケース
         logging.info('Failed (> <)')
@@ -260,7 +295,7 @@ def get_problems(grade_config):
     return problems
 
 
-def get_closest(target, xs):
+def get_closest(target, xs, accept_distance=3):
     """
     xs の中からもっとも target に文字列のレーベンシュタイン距離が近いものを返す。
     ただし、距離が3より離れていたら、対象のファイルはなかったことにする。
@@ -274,7 +309,7 @@ def get_closest(target, xs):
             max_distance = d
     if max_distance == 0:
         return closest
-    elif max_distance <= 3:
+    elif max_distance <= accept_distance:
         logging.warning('No files found that match the target `{}`, but `{}` is found.'.format(target, closest))
         return closest
     else:

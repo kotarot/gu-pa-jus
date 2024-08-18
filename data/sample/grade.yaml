@@ -4,6 +4,8 @@
       output: "6"
     - input: "30 40"
       output: "600"
+      output_length_limit: 100
+      output_disallowed: "123456789"
   deny_list:
     - "system"
     - "fork"

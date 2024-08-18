@@ -16,18 +16,18 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Show Python version
+      run: |
+        python --version
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Download assert.sh
+    - name: List dependencies
       run: |
-        wget https://raw.githubusercontent.com/lehmannro/assert.sh/master/assert.sh
-
-    - name: Test Snakemake version
-      run: |
-        . assert.sh && assert "snakemake --version" "7.8.5"
+        pip list
 
     - name: Print pylint version
       run: |
@@ -44,6 +44,10 @@ jobs:
     - name: Start a gu-pa-jus container
       run: |
         docker run -d -it --name my-gu-pa-jus gu-pa-jus
+
+    - name: List Docker containers
+      run: |
+        docker ps -a
 
     - name: Grade the sample assignment (dry-run)
       run: |
