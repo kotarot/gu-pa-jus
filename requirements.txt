@@ -3,4 +3,5 @@ networkx==3.3
 Pygments==2.18.0
 pylint==2.17.7
 python-Levenshtein==0.25.1
+PuLP==2.7.0
 snakemake==7.32.4
