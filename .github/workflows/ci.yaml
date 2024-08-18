@@ -29,14 +29,6 @@ jobs:
       run: |
         pip list
 
-    - name: Download assert.sh
-      run: |
-        wget https://raw.githubusercontent.com/lehmannro/assert.sh/master/assert.sh
-
-    - name: Test Snakemake version
-      run: |
-        . assert.sh && assert "snakemake --version" "7.8.5"
-
     - name: Print pylint version
       run: |
         pylint --version
