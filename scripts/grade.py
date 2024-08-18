@@ -243,15 +243,22 @@ def grade_source_code(filename, problem, grade_config):
             output_disp = output[:1000]
             logging.info(f'STDOUT ==>\n{"-" * 60}\n{output_disp.rstrip()}\n{"-" * 60}')
 
+            output_length_limit = test_case['output_length_limit'] if 'output_length_limit' in test_case else None
+            output_disallowed = test_case['output_disallowed'] if 'output_disallowed' in test_case else None
+
             # 出力文字数制限オーバー
             # ただし句読点と改行はカウントしない
             # 数字もカウントしない
             limited_output = re.sub(r'[,.:;、。\n]', '', output)
             limited_output = re.sub(r'[0-9]', '', limited_output)
-            if ('output_length_limit' in test_case) and (len(limited_output) > test_case['output_length_limit']):
+            if output_length_limit and (len(limited_output) > output_length_limit):
                 logging.info('Output length limit exceeded.')
 
-            # 実行結果が正しいケース
+            # 実行結果に不許可文字列が含まれている場合
+            elif output_disallowed and re.search(output_disallowed, output):
+                logging.info('Output contains disallowed string.')
+
+            # 実行結果が期待結果と正しいケース
             else:
                 match_obj = re.search(test_case['output'], output)
                 if match_obj:
