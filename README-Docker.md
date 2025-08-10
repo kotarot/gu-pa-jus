@@ -1,10 +1,5 @@
 # Docker Commands
 
-Docker Hubからlatestを取ってくる場合
-```bash
-docker pull kotarot/gu-pa-jus
-```
-
 Dockerfileからイメージをビルド
 ```bash
 docker build -t gu-pa-jus .
@@ -12,18 +7,8 @@ docker build -t gu-pa-jus .
 docker build -t gu-pa-jus . --no-cache=true
 ```
 
-Docker Hubにイメージを手動push
-```bash
-docker login
-docker image ls
-docker tag <image id> kotarot/gu-pa-jus:latest
-docker push kotarot/gu-pa-jus:latest
-```
-
 コンテナ起動
 ```bash
-docker run -d -it --name my-gu-pa-jus kotarot/gu-pa-jus
-# (or)
 docker run -d -it --name my-gu-pa-jus gu-pa-jus
 ```
 
@@ -63,4 +48,24 @@ docker stop my-gu-pa-jus
 ```bash
 docker rm <コンテナID>
 docker rm my-gu-pa-jus
+```
+
+## Docker Hub を用いる場合 (pull/push)
+
+Docker Hubからlatestを取ってくる場合
+```bash
+docker pull kotarot/gu-pa-jus
+```
+
+Docker Hubにイメージを手動push
+```bash
+docker login
+docker image ls
+docker tag <image id> kotarot/gu-pa-jus:latest
+docker push kotarot/gu-pa-jus:latest
+```
+
+コンテナ起動
+```bash
+docker run -d -it --name my-gu-pa-jus kotarot/gu-pa-jus
 ```
