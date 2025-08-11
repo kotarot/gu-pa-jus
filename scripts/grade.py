@@ -140,6 +140,13 @@ def grade_student(student_id, assignment_name, grade_config, progress=''):
         # 作成してほしかったファイル名と最もレーベンシュタイン距離が近いファイル名を採点対象とする
         target_file = get_closest(problem, list(source_files_with_corrected.keys()))
         if not target_file:
+            # 本来のファイル名で開始されているファイル名があればそれを対象とする
+            for filename in source_files_with_corrected.keys():
+                if filename.startswith(problem):
+                    target_file = filename
+                    logging.warning('No files found that match the target `{}`, but `{}` is found.'.format(problem, target_file))
+                    break
+        if not target_file:
             logging.warning('{} is not found (> <) --> score = 0'.format(problem))
             result.append(0)
         else:
@@ -195,6 +202,7 @@ def grade_source_code(filename, problem, grade_config):
     passed, failed, penalty = 0, 0, 0
     for i, test_case in enumerate(problem_config['test_cases']):
         logging.info('--- Trying test case {} / {} ...'.format(i + 1, len(problem_config['test_cases'])))
+        logging.info(f'STDIN ==> "{test_case["input"]}"')
 
         # 外部ファイルが指定されていればコピーする
         if 'external_files' in test_case:
