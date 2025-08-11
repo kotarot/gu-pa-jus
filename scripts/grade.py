@@ -202,6 +202,7 @@ def grade_source_code(filename, problem, grade_config):
     passed, failed, penalty = 0, 0, 0
     for i, test_case in enumerate(problem_config['test_cases']):
         logging.info('--- Trying test case {} / {} ...'.format(i + 1, len(problem_config['test_cases'])))
+        logging.info(f'STDIN ==> "{test_case["input"]}"')
 
         # 外部ファイルが指定されていればコピーする
         if 'external_files' in test_case:
