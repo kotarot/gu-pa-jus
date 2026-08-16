@@ -13,7 +13,7 @@
 ## 動作確認済み環境
 
 - Docker Desktop 4.86.0
-- Python 3.11.4
+- Python 3.13.5
 
 
 ## Docker Hub
@@ -22,7 +22,7 @@ https://hub.docker.com/r/kotarot/gu-pa-jus
 
 ### 現在の対応済み言語
 
-- `C` (gcc (Ubuntu 11.3.0-5ubuntu1) 11.3.0)
+- `C` (gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0)
 
 
 ## 実行方法
@@ -39,8 +39,8 @@ pyenv, virtualenv をセットアップし、Python をインストールして�
 
 仮想環境と [Snakemake](https://github.com/snakemake/snakemake) のセットアップ:
 ```
-$ pyenv virtualenv 3.11.4 gu-pa-jus
-$ pyenv local 3.11.4/envs/gu-pa-jus
+$ pyenv virtualenv 3.13.5 gu-pa-jus
+$ pyenv local 3.13.5/envs/gu-pa-jus
 
 $ pip install --upgrade pip
 $ pip install -r requirements.txt
@@ -49,7 +49,7 @@ $ pip install -r requirements.txt
 確認:
 ```
 $ snakemake --version
-7.32.4
+9.25.1
 ```
 
 ### ソースコードのセットアップ

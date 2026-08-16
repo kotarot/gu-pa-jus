@@ -1,7 +1,4 @@
-Jinja2==3.1.4
-networkx==3.3
-Pygments==2.18.0
-pylint==2.17.7
-python-Levenshtein==0.25.1
-PuLP==2.7.0
-snakemake==7.32.4
+pylint==4.0.7
+pytest==9.1.1
+python-Levenshtein==0.27.4
+snakemake==9.25.1
