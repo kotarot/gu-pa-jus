@@ -12,7 +12,7 @@
 
 ## 動作確認済み環境
 
-- Docker Desktop 4.33.0
+- Docker Desktop 4.86.0
 - Python 3.11.4
 
 
